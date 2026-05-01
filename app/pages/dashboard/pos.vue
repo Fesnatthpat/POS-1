@@ -45,7 +45,7 @@ const lastOrder = ref<any>(null)
 
 // --- Computed ---
 const filteredProducts = computed(() => {
-  return products.value.filter(p => 
+  return products.value.filter(p =>
     p.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     p.category.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     p.barcode?.includes(searchQuery.value) ||
@@ -77,7 +77,7 @@ const changeDue = computed(() => {
 
 // --- Actions ---
 const handleSlipUpload = (event: any) => {
-  const file = event.target.files[0]
+  const file = event.target.files[ 0 ]
   if (file) {
     if (file.size > 1000000) {
       alert('File too large (Limit: 1MB)')
@@ -123,10 +123,10 @@ const addToCart = (product: any, quantity: number) => {
       alert(`Only ${product.stock} items available in stock.`)
     }
   } else {
-    cart.value.push({ 
-      ...product, 
+    cart.value.push({
+      ...product,
       quantity,
-      cost: product.cost || 0 
+      cost: product.cost || 0
     })
   }
 }
@@ -195,7 +195,7 @@ const completeCheckout = () => {
     alert('Please capture/upload payment slip!')
     return
   }
-  
+
   const totalCost = cart.value.reduce((sum, item) => sum + (item.cost * item.quantity), 0)
 
   // Create Order
@@ -221,7 +221,7 @@ const completeCheckout = () => {
   }
 
   const order = addOrder(orderData)
-  
+
   // Deduct Stock
   cart.value.forEach(item => {
     deductStock(item.id, item.quantity)
@@ -258,7 +258,8 @@ const formatDate = (dateStr: string) => {
           <h1 class="text-3xl font-black text-slate-900 tracking-tight">Point of Sale</h1>
           <p class="text-slate-500 font-medium text-sm mt-1">Terminal: {{ settings.name }}</p>
         </div>
-        <button @click="isHeldBillsModalOpen = true" class="px-4 py-2 bg-amber-100 text-amber-700 rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm border border-amber-200/50 hover:bg-amber-200 transition-all">
+        <button @click="isHeldBillsModalOpen = true"
+          class="px-4 py-2 bg-amber-100 text-amber-700 rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm border border-amber-200/50 hover:bg-amber-200 transition-all">
           <span class="relative flex h-2.5 w-2.5" v-if="heldBills.length > 0">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
             <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
@@ -271,20 +272,24 @@ const formatDate = (dateStr: string) => {
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div class="md:col-span-2 relative">
           <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </span>
-          <input type="text" v-model="searchQuery" placeholder="Search product name, category..." 
+          <input type="text" v-model="searchQuery" placeholder="Search product name, category..."
             class="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all" />
         </div>
         <div class="relative hidden md:block">
           <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
             </svg>
           </span>
-          <input type="text" v-model="barcodeInput" @keyup.enter="handleBarcodeScan" placeholder="Scan Barcode..." 
+          <input type="text" v-model="barcodeInput" @keyup.enter="handleBarcodeScan" placeholder="Scan Barcode..."
             class="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all" />
         </div>
       </div>
@@ -293,18 +298,22 @@ const formatDate = (dateStr: string) => {
       <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 pb-20 lg:pb-0">
         <button v-for="product in filteredProducts" :key="product.id" @click="openProductModal(product)"
           class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all text-left group relative overflow-hidden flex flex-col">
-          <div class="w-full aspect-square bg-slate-50 rounded-2xl mb-4 flex items-center justify-center text-slate-300 group-hover:bg-indigo-50 group-hover:text-indigo-400 transition-colors overflow-hidden">
+          <div
+            class="w-full aspect-square bg-slate-50 rounded-2xl mb-4 flex items-center justify-center text-slate-300 group-hover:bg-indigo-50 group-hover:text-indigo-400 transition-colors overflow-hidden">
             <img v-if="product.image" :src="product.image" class="w-full h-full object-cover" />
-            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
           </div>
           <h3 class="font-bold text-slate-900 truncate text-sm mb-0.5">{{ product.name }}</h3>
           <p class="text-[10px] font-black text-slate-400 uppercase mb-3">{{ product.category }}</p>
           <div class="mt-auto flex items-center justify-between">
             <span class="text-indigo-600 font-black">{{ formatCurrency(product.price) }}</span>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" :class="product.stock <= 5 ? 'bg-rose-50 text-rose-500' : 'bg-slate-50 text-slate-400'">
-               {{ product.stock }} left
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full"
+              :class="product.stock <= 5 ? 'bg-rose-50 text-rose-500' : 'bg-slate-50 text-slate-400'">
+              {{ product.stock }} left
             </span>
           </div>
         </button>
@@ -312,37 +321,39 @@ const formatDate = (dateStr: string) => {
     </div>
 
     <!-- Mobile Cart Backdrop -->
-    <Transition
-      enter-active-class="transition-opacity duration-300"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition-opacity duration-300"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-       <div v-if="isCartOpenMobile" @click="isCartOpenMobile = false" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[50] lg:hidden"></div>
+    <Transition enter-active-class="transition-opacity duration-300" enter-from-class="opacity-0"
+      enter-to-class="opacity-100" leave-active-class="transition-opacity duration-300" leave-from-class="opacity-100"
+      leave-to-class="opacity-0">
+      <div v-if="isCartOpenMobile" @click="isCartOpenMobile = false"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[50] lg:hidden"></div>
     </Transition>
 
     <!-- Right: Sidebar Cart Area -->
-    <aside class="fixed inset-y-0 right-0 w-[85%] sm:w-[400px] bg-white z-[60] transform transition-transform duration-300 lg:static lg:w-[400px] lg:translate-x-0 lg:flex-shrink-0 flex flex-col h-full border-l border-slate-100 shadow-2xl lg:shadow-none"
-      :class="[isCartOpenMobile ? 'translate-x-0' : 'translate-x-full lg:translate-x-0']">
-      
+    <aside
+      class="fixed inset-y-0 right-0 w-[85%] sm:w-[400px] bg-white z-[60] transform transition-transform duration-300 lg:static lg:w-[400px] lg:translate-x-0 lg:flex-shrink-0 flex flex-col h-full border-l border-slate-100 shadow-2xl lg:shadow-none"
+      :class="[ isCartOpenMobile ? 'translate-x-0' : 'translate-x-full lg:translate-x-0' ]">
+
       <!-- Cart Header -->
       <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
         <div>
           <h2 class="text-xl font-black text-slate-900">Current Order</h2>
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{{ cart.length }} items selected</p>
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{{ cart.length }} items
+            selected</p>
         </div>
         <div class="flex gap-2">
-          <button @click="clearCart" class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-all" title="Clear Order">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          <button @click="clearCart" class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+            title="Clear Order">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </button>
           <button @click="isCartOpenMobile = false" class="lg:hidden p-2 text-slate-400 hover:text-slate-600">
-             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-             </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
       </div>
@@ -354,8 +365,10 @@ const formatDate = (dateStr: string) => {
           <p class="font-bold text-slate-500 uppercase tracking-widest text-xs">Your cart is empty</p>
         </div>
 
-        <div v-for="item in cart" :key="item.id" class="flex items-center gap-4 group animate-in slide-in-from-right-4 duration-200">
-          <div class="w-12 h-12 bg-slate-50 rounded-xl flex-shrink-0 flex items-center justify-center text-slate-400 overflow-hidden border border-slate-100">
+        <div v-for="item in cart" :key="item.id"
+          class="flex items-center gap-4 group animate-in slide-in-from-right-4 duration-200">
+          <div
+            class="w-12 h-12 bg-slate-50 rounded-xl flex-shrink-0 flex items-center justify-center text-slate-400 overflow-hidden border border-slate-100">
             <img v-if="item.image" :src="item.image" class="w-full h-full object-cover" />
             <span v-else class="text-xl">📦</span>
           </div>
@@ -365,14 +378,17 @@ const formatDate = (dateStr: string) => {
           </div>
           <div class="flex items-center gap-2">
             <div class="flex items-center bg-slate-50 rounded-lg border border-slate-100 p-0.5">
-               <button @click="updateQuantity(item.id, -1)" class="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm transition-all text-xs font-black">-</button>
-               <span class="w-6 text-center font-bold text-xs">{{ item.quantity }}</span>
-               <button @click="updateQuantity(item.id, 1)" class="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm transition-all text-xs font-black">+</button>
+              <button @click="updateQuantity(item.id, -1)"
+                class="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm transition-all text-xs font-black">-</button>
+              <span class="w-6 text-center font-bold text-xs">{{ item.quantity }}</span>
+              <button @click="updateQuantity(item.id, 1)"
+                class="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm transition-all text-xs font-black">+</button>
             </div>
             <button @click="removeFromCart(item.id)" class="text-slate-300 hover:text-rose-500 transition-colors p-1">
-               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-               </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           </div>
         </div>
@@ -385,17 +401,19 @@ const formatDate = (dateStr: string) => {
             <span class="text-slate-500 font-bold uppercase tracking-wider">Subtotal</span>
             <span class="text-slate-900 font-black">{{ formatCurrency(subtotal) }}</span>
           </div>
-          
+
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">Discount</span>
-              <select v-model="discountType" class="text-[9px] font-black bg-white border border-slate-200 rounded px-1 outline-none">
+              <select v-model="discountType"
+                class="text-[9px] font-black bg-white border border-slate-200 rounded px-1 outline-none">
                 <option value="percent">%</option>
                 <option value="amount">฿</option>
               </select>
             </div>
             <div class="flex items-center gap-2">
-              <input type="number" v-model="discountValue" class="w-14 text-right text-xs font-black bg-white border border-slate-200 rounded-lg px-2 py-1 focus:ring-1 focus:ring-indigo-500 outline-none" />
+              <input type="number" v-model="discountValue"
+                class="w-14 text-right text-xs font-black bg-white border border-slate-200 rounded-lg px-2 py-1 focus:ring-1 focus:ring-indigo-500 outline-none" />
               <span class="text-rose-500 font-black text-[10px]">(-{{ formatCurrency(discountAmount) }})</span>
             </div>
           </div>
@@ -422,30 +440,36 @@ const formatDate = (dateStr: string) => {
     <!-- Mobile View: Floating Cart Button -->
     <button v-if="!isCartOpenMobile" @click="isCartOpenMobile = true"
       class="lg:hidden fixed bottom-8 right-8 w-16 h-16 bg-indigo-600 text-white rounded-full shadow-2xl z-40 flex items-center justify-center animate-bounce-slow">
-       <div class="relative">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-          </svg>
-          <span v-if="cart.length > 0" class="absolute -top-2 -right-2 w-6 h-6 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white">
-            {{ cart.length }}
-          </span>
-       </div>
+      <div class="relative">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+        <span v-if="cart.length > 0"
+          class="absolute -top-2 -right-2 w-6 h-6 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white">
+          {{ cart.length }}
+        </span>
+      </div>
     </button>
 
     <!-- Checkout Modal -->
-    <div v-if="isCheckoutModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-      <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[95vh] animate-in fade-in zoom-in-95 duration-200">
+    <div v-if="isCheckoutModalOpen"
+      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+      <div
+        class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[95vh] animate-in fade-in zoom-in-95 duration-200">
         <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
           <h3 class="text-2xl font-black text-slate-900">Checkout</h3>
           <button @click="isCheckoutModalOpen = false" class="text-slate-400 hover:text-slate-600 transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
         <div class="flex-1 overflow-y-auto p-8 space-y-8">
-          <div class="bg-indigo-600 rounded-[2rem] p-8 flex justify-between items-center text-white shadow-xl shadow-indigo-100">
+          <div
+            class="bg-indigo-600 rounded-[2rem] p-8 flex justify-between items-center text-white shadow-xl shadow-indigo-100">
             <div>
               <p class="text-xs font-bold opacity-70 uppercase tracking-widest mb-1">Grand Total</p>
               <p class="text-4xl font-black">{{ formatCurrency(cartTotal) }}</p>
@@ -458,7 +482,8 @@ const formatDate = (dateStr: string) => {
 
           <div class="space-y-6">
             <div>
-              <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Customer Member</label>
+              <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Customer
+                Member</label>
               <select v-model="selectedCustomerId"
                 class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 appearance-none text-sm transition-all">
                 <option :value="null">Walking Customer (No Points)</option>
@@ -469,23 +494,24 @@ const formatDate = (dateStr: string) => {
             </div>
 
             <div>
-              <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Payment Method</label>
+              <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Payment
+                Method</label>
               <div class="grid grid-cols-3 gap-4">
                 <button @click="paymentMethod = 'cash'; amountReceived = null"
                   class="flex flex-col items-center justify-center p-6 rounded-3xl border-2 transition-all"
-                  :class="[paymentMethod === 'cash' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 hover:bg-slate-50']">
+                  :class="[ paymentMethod === 'cash' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 hover:bg-slate-50' ]">
                   <span class="text-3xl mb-2">💵</span>
                   <span class="font-black text-xs uppercase tracking-widest">Cash</span>
                 </button>
                 <button @click="paymentMethod = 'qr'; amountReceived = cartTotal"
                   class="flex flex-col items-center justify-center p-6 rounded-3xl border-2 transition-all"
-                  :class="[paymentMethod === 'qr' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 hover:bg-slate-50']">
+                  :class="[ paymentMethod === 'qr' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 hover:bg-slate-50' ]">
                   <span class="text-3xl mb-2">🔳</span>
                   <span class="font-black text-xs uppercase tracking-widest">QR Pay</span>
                 </button>
                 <button @click="paymentMethod = 'transfer'; amountReceived = cartTotal"
                   class="flex flex-col items-center justify-center p-6 rounded-3xl border-2 transition-all"
-                  :class="[paymentMethod === 'transfer' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 hover:bg-slate-50']">
+                  :class="[ paymentMethod === 'transfer' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 hover:bg-slate-50' ]">
                   <span class="text-3xl mb-2">📱</span>
                   <span class="font-black text-xs uppercase tracking-widest">Bank</span>
                 </button>
@@ -495,53 +521,71 @@ const formatDate = (dateStr: string) => {
             <!-- Cash Input -->
             <div v-if="paymentMethod === 'cash'" class="space-y-6 animate-in slide-in-from-top-4 duration-300">
               <div>
-                <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Amount Received</label>
+                <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Amount
+                  Received</label>
                 <div class="grid grid-cols-4 gap-2 mb-4">
-                  <button v-for="amt in [100, 500, 1000]" :key="amt" @click="amountReceived = (amountReceived || 0) + amt"
-                    class="py-3 bg-slate-100 rounded-xl font-black text-xs hover:bg-slate-200 transition-all">+{{ amt }}</button>
-                  <button @click="amountReceived = cartTotal" class="py-3 bg-indigo-50 text-indigo-600 rounded-xl font-black text-xs border border-indigo-100">Exact</button>
+                  <button v-for="amt in [ 100, 500, 1000 ]" :key="amt"
+                    @click="amountReceived = (amountReceived || 0) + amt"
+                    class="py-3 bg-slate-100 rounded-xl font-black text-xs hover:bg-slate-200 transition-all">+{{ amt
+                    }}</button>
+                  <button @click="amountReceived = cartTotal"
+                    class="py-3 bg-indigo-50 text-indigo-600 rounded-xl font-black text-xs border border-indigo-100">Exact</button>
                 </div>
                 <input type="number" v-model="amountReceived" placeholder="0.00"
                   class="w-full px-6 py-6 bg-slate-50 border border-slate-200 rounded-[2rem] text-4xl font-black focus:ring-2 focus:ring-indigo-500 text-center outline-none" />
               </div>
-              <div v-if="amountReceived" class="p-6 bg-emerald-50 rounded-3xl flex justify-between items-center border border-emerald-100">
+              <div v-if="amountReceived"
+                class="p-6 bg-emerald-50 rounded-3xl flex justify-between items-center border border-emerald-100">
                 <span class="text-lg font-black text-emerald-600 uppercase tracking-widest">Change</span>
                 <span class="text-4xl font-black text-emerald-700">{{ formatCurrency(changeDue) }}</span>
               </div>
             </div>
 
             <!-- QR/Transfer Capture -->
-            <div v-if="paymentMethod === 'qr' || paymentMethod === 'transfer'" class="space-y-6 animate-in slide-in-from-top-4 duration-300">
-              <div v-if="paymentMethod === 'qr'" class="flex flex-col items-center p-6 bg-slate-50 rounded-3xl border border-slate-200">
-                <p class="font-bold text-slate-500 mb-4 uppercase tracking-widest text-[10px] text-center">Scan QR Code to pay {{ formatCurrency(cartTotal) }}</p>
-                <div class="w-40 h-40 bg-white p-4 border-2 border-slate-100 rounded-2xl flex items-center justify-center relative shadow-sm mb-2">
+            <div v-if="paymentMethod === 'qr' || paymentMethod === 'transfer'"
+              class="space-y-6 animate-in slide-in-from-top-4 duration-300">
+              <div v-if="paymentMethod === 'qr'"
+                class="flex flex-col items-center p-6 bg-slate-50 rounded-3xl border border-slate-200">
+                <p class="font-bold text-slate-500 mb-4 uppercase tracking-widest text-[10px] text-center">Scan QR Code
+                  to pay {{ formatCurrency(cartTotal) }}</p>
+                <div
+                  class="w-40 h-40 bg-white p-4 border-2 border-slate-100 rounded-2xl flex items-center justify-center relative shadow-sm mb-2">
                   <div class="grid grid-cols-4 grid-rows-4 gap-1 w-full h-full opacity-60">
-                    <div v-for="n in 16" :key="n" :class="Math.random() > 0.5 ? 'bg-slate-900' : 'bg-transparent'" class="rounded-sm"></div>
+                    <div v-for="n in 16" :key="n" :class="Math.random() > 0.5 ? 'bg-slate-900' : 'bg-transparent'"
+                      class="rounded-sm"></div>
                   </div>
                   <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                     <div class="bg-white p-1 rounded-md shadow-md font-black text-indigo-600 text-[10px] uppercase border border-indigo-50">VENDORA PAY</div>
+                    <div
+                      class="bg-white p-1 rounded-md shadow-md font-black text-indigo-600 text-[10px] uppercase border border-indigo-50">
+                      VENDORA PAY</div>
                   </div>
                 </div>
               </div>
 
               <div class="space-y-3">
-                <label class="block text-xs font-black text-slate-400 uppercase tracking-widest">Payment Evidence / Slip</label>
-                <div class="relative w-full aspect-video bg-slate-100 border-2 border-dashed border-slate-300 rounded-3xl overflow-hidden group flex items-center justify-center transition-all hover:bg-slate-200">
-                   <img v-if="paymentSlip" :src="paymentSlip" class="w-full h-full object-cover" />
-                   <div v-else class="text-center p-6">
-                      <span class="text-4xl block mb-2">📸</span>
-                      <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Take Photo or Upload Slip</span>
-                   </div>
-                   <input type="file" accept="image/*" capture="environment" @change="handleSlipUpload" class="absolute inset-0 opacity-0 cursor-pointer" />
-                   <div v-if="paymentSlip" class="absolute top-4 right-4">
-                      <button @click="paymentSlip = null" class="bg-rose-500 text-white p-2 rounded-xl shadow-lg hover:bg-rose-600 transition-all font-black text-xs">RE-TAKE</button>
-                   </div>
+                <label class="block text-xs font-black text-slate-400 uppercase tracking-widest">Payment Evidence /
+                  Slip</label>
+                <div
+                  class="relative w-full aspect-video bg-slate-100 border-2 border-dashed border-slate-300 rounded-3xl overflow-hidden group flex items-center justify-center transition-all hover:bg-slate-200">
+                  <img v-if="paymentSlip" :src="paymentSlip" class="w-full h-full object-cover" />
+                  <div v-else class="text-center p-6">
+                    <span class="text-4xl block mb-2">📸</span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Take Photo or Upload
+                      Slip</span>
+                  </div>
+                  <input type="file" accept="image/*" capture="environment" @change="handleSlipUpload"
+                    class="absolute inset-0 opacity-0 cursor-pointer" />
+                  <div v-if="paymentSlip" class="absolute top-4 right-4">
+                    <button @click="paymentSlip = null"
+                      class="bg-rose-500 text-white p-2 rounded-xl shadow-lg hover:bg-rose-600 transition-all font-black text-xs">RE-TAKE</button>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div>
-              <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Order Notes (Optional)</label>
+              <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Order Notes
+                (Optional)</label>
               <textarea v-model="notes" rows="2" placeholder="Customer requests, table number..."
                 class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm transition-all outline-none"></textarea>
             </div>
@@ -557,8 +601,180 @@ const formatDate = (dateStr: string) => {
       </div>
     </div>
 
-    <!-- Modals (Product Detail, Receipt, Held Bills) following the same polished design... -->
-    <!-- (Redacted for brevity, assumed to be polished in next steps) -->
+    <!-- Product Detail Modal -->
+    <div v-if="isProductModalOpen"
+      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+      <div
+        class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+        <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+          <h3 class="text-2xl font-black text-slate-900">Product Detail</h3>
+          <button @click="isProductModalOpen = false" class="text-slate-400 hover:text-slate-600 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="p-8 space-y-8">
+          <div class="flex gap-6">
+            <div
+              class="w-32 h-32 bg-slate-50 rounded-3xl flex-shrink-0 flex items-center justify-center text-slate-300 overflow-hidden border border-slate-100">
+              <img v-if="selectedProduct?.image" :src="selectedProduct.image" class="w-full h-full object-cover" />
+              <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h4 class="text-2xl font-black text-slate-900 mb-1">{{ selectedProduct?.name }}</h4>
+              <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">{{ selectedProduct?.category
+                }}</p>
+              <p class="text-3xl font-black text-indigo-600">{{ formatCurrency(selectedProduct?.price || 0) }}</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Select Quantity</span>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-50 text-slate-400">
+                {{ selectedProduct?.stock }} available
+              </span>
+            </div>
+            <div class="flex items-center justify-center gap-6 bg-slate-50 rounded-[2rem] p-4 border border-slate-100">
+              <button @click="selectedQuantity = Math.max(1, selectedQuantity - 1)"
+                class="w-16 h-16 flex items-center justify-center bg-white rounded-2xl shadow-sm border border-slate-200 text-2xl font-black hover:bg-slate-50 transition-all">-</button>
+              <span class="text-4xl font-black w-20 text-center text-slate-900">{{ selectedQuantity }}</span>
+              <button @click="selectedQuantity = Math.min(selectedProduct?.stock || 1, selectedQuantity + 1)"
+                class="w-16 h-16 flex items-center justify-center bg-white rounded-2xl shadow-sm border border-slate-200 text-2xl font-black hover:bg-slate-50 transition-all">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-8 bg-slate-50 border-t border-slate-100">
+          <button @click="confirmAddToCart"
+            class="w-full py-6 bg-indigo-600 text-white rounded-[2rem] font-black text-xl shadow-2xl shadow-indigo-900/20 hover:bg-indigo-700 transition-all">
+            Add to Order
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div v-if="isReceiptModalOpen"
+      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+      <div
+        class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+        <div class="p-8 text-center border-b border-dashed border-slate-200 flex-shrink-0 bg-slate-50/50">
+          <div
+            class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+            ✅</div>
+          <h3 class="text-2xl font-black text-slate-900">Payment Success</h3>
+          <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-1">Order #{{ lastOrder?.id }}</p>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-8 bg-white">
+          <div class="space-y-4 font-mono text-xs border-b border-dashed border-slate-300 pb-6 mb-6">
+            <div class="text-center font-bold mb-4">
+              <p class="text-lg">{{ settings.name }}</p>
+              <p class="text-[10px] text-slate-500">{{ settings.address }}</p>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Date:</span>
+              <span class="font-bold">{{ formatDate(lastOrder?.timestamp || new Date().toISOString()) }}</span>
+            </div>
+            <div class="py-4 border-y border-dashed border-slate-200">
+              <div v-for="item in lastOrder?.items" :key="item.id" class="flex justify-between mb-1 gap-4">
+                <span class="truncate">{{ item.name }} x{{ item.quantity }}</span>
+                <span class="flex-shrink-0">{{ formatCurrency(item.price * item.quantity) }}</span>
+              </div>
+            </div>
+            <div class="flex justify-between">
+              <span>Subtotal:</span>
+              <span>{{ formatCurrency(lastOrder?.subtotal || 0) }}</span>
+            </div>
+            <div v-if="lastOrder?.discount" class="flex justify-between text-rose-500">
+              <span>Discount:</span>
+              <span>-{{ formatCurrency(lastOrder?.discount) }}</span>
+            </div>
+            <div class="flex justify-between text-lg font-black pt-4 border-t border-slate-200 mt-4">
+              <span>Total:</span>
+              <span>{{ formatCurrency(lastOrder?.total || 0) }}</span>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Thank you for your purchase!
+            </p>
+            <button @click="isReceiptModalOpen = false"
+              class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-sm hover:bg-slate-800 transition-all">
+              Done
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Held Bills Modal -->
+    <div v-if="isHeldBillsModalOpen"
+      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+      <div
+        class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[80vh] animate-in fade-in zoom-in-95 duration-200">
+        <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+          <div>
+            <h3 class="text-2xl font-black text-slate-900">Held Bills</h3>
+            <p class="text-xs font-black text-slate-400 uppercase tracking-widest mt-1">{{ heldBills.length }} bills on
+              hold</p>
+          </div>
+          <button @click="isHeldBillsModalOpen = false" class="text-slate-400 hover:text-slate-600 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-8">
+          <div v-if="heldBills.length === 0"
+            class="h-64 flex flex-col items-center justify-center text-center opacity-30">
+            <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-3xl">📂</div>
+            <p class="font-bold text-slate-500 uppercase tracking-widest text-xs">No held bills found</p>
+          </div>
+          <div v-else class="space-y-4">
+            <div v-for="bill in heldBills" :key="bill.id"
+              class="p-6 bg-slate-50 rounded-3xl border border-slate-200 flex items-center justify-between group hover:border-amber-500 transition-all">
+              <div class="flex-1 min-w-0 mr-4">
+                <div class="flex items-center gap-3 mb-1">
+                  <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-black rounded-lg uppercase">#{{
+                    bill.id }}</span>
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{
+                    formatDate(bill.timestamp) }}</span>
+                </div>
+                <h4 class="font-black text-slate-900 truncate" v-if="bill.note">{{ bill.note }}</h4>
+                <p class="text-xs font-bold text-slate-500">{{ bill.items.length }} items — {{
+                  formatCurrency(bill.items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0))
+                  }}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button @click="deleteHeldBill(bill.id)"
+                  class="p-3 text-rose-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+                <button @click="handleResumeBill(bill.id)"
+                  class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-black text-sm shadow-lg shadow-indigo-900/20 hover:bg-indigo-700 transition-all">
+                  Resume
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -566,8 +782,18 @@ const formatDate = (dateStr: string) => {
 .animate-bounce-slow {
   animation: bounce 2s infinite;
 }
+
 @keyframes bounce {
-  0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
-  50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); }
+
+  0%,
+  100% {
+    transform: translateY(-5%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
 }
 </style>
