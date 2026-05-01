@@ -7,7 +7,6 @@ export interface Customer {
   points: number
   level: string
   joinDate: string
-  history: any[]
 }
 
 export const useCustomers = () => {
@@ -20,26 +19,12 @@ export const useCustomers = () => {
       if (saved) {
         customers.value = JSON.parse(saved)
       } else {
-        // Default mock data if empty
         customers.value = [
-          { 
-            id: 1, 
-            name: 'Somchai Rakdee', 
-            phone: '081-234-5678', 
-            points: 1250, 
-            level: 'Gold',
-            joinDate: '2025-01-15',
-            history: []
-          },
-          { 
-            id: 2, 
-            name: 'Somsri Deeai', 
-            phone: '089-876-5432', 
-            points: 450, 
-            level: 'Silver',
-            joinDate: '2025-03-20',
-            history: []
-          }
+          { id: 1, name: 'Somchai Dee', phone: '081-234-5678', points: 1250, level: 'Platinum', joinDate: '2025-01-15' },
+          { id: 2, name: 'Somsri Rakdee', phone: '089-876-5432', points: 450, level: 'Gold', joinDate: '2025-02-10' },
+          { id: 3, name: 'Wichai Chuenjai', phone: '082-333-4444', points: 120, level: 'Silver', joinDate: '2025-03-05' },
+          { id: 4, name: 'Ananya Srisuk', phone: '085-111-2222', points: 2800, level: 'Platinum', joinDate: '2025-01-20' },
+          { id: 5, name: 'Kitti Wattana', phone: '086-444-5555', points: 85, level: 'Silver', joinDate: '2025-04-12' },
         ]
       }
       isInitialLoad.value = false
@@ -52,22 +37,22 @@ export const useCustomers = () => {
     }
   }
 
-  const addCustomer = (customer: Omit<Customer, 'id' | 'joinDate' | 'points' | 'history'>) => {
+  const addCustomer = (customer: Omit<Customer, 'id' | 'points' | 'joinDate'>) => {
     const newCustomer: Customer = {
       ...customer,
       id: Date.now(),
       points: 0,
-      joinDate: new Date().toISOString().split('T')[0],
-      history: []
+      joinDate: new Date().toISOString().split('T')[0]
     }
     customers.value.push(newCustomer)
     saveCustomers()
   }
 
-  const addPoints = (customerId: number, points: number) => {
-    const customer = customers.value.find(c => c.id === customerId)
+  const addPoints = (id: number, amount: number) => {
+    const customer = customers.value.find(c => c.id === id)
     if (customer) {
-      customer.points += Math.floor(points)
+      // Rule: 1 point for every 20 THB
+      customer.points += Math.floor(amount / 20)
       saveCustomers()
     }
   }

@@ -78,16 +78,16 @@ const formatDate = (dateStr: string) => {
 
 <template>
   <div class="p-4 sm:p-6 lg:p-8">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 lg:gap-6 mb-8 lg:mb-10">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 lg:mb-10">
       <div>
         <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">Customers</h1>
         <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">Manage members and loyalty program.</p>
       </div>
-      <button @click="openAddModal" class="flex items-center justify-center space-x-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
+      <button @click="openAddModal" class="flex items-center justify-center space-x-2 bg-indigo-600 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all text-sm sm:text-base">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
         </svg>
-        <span>Add Member</span>
+        <span class="whitespace-nowrap">Add Member</span>
       </button>
     </div>
 
@@ -153,7 +153,7 @@ const formatDate = (dateStr: string) => {
       </div>
     </div>
 
-    <!-- Modals (Built-in Responsive) -->
+    <!-- Modals -->
     <!-- Add Customer Modal -->
     <div v-if="isAddModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
       <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
@@ -196,6 +196,64 @@ const formatDate = (dateStr: string) => {
       </div>
     </div>
 
-    <!-- Other modals (Points, History) follow similar responsive pattern -->
+    <!-- Adjust Points Modal -->
+    <div v-if="isPointsModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
+        <div class="p-8 text-center">
+          <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-black text-slate-900 mb-2">Adjust Points</h3>
+          <p class="text-sm text-slate-500 font-medium mb-6">For <span class="text-indigo-600 font-bold">{{ selectedCustomer?.name }}</span></p>
+          
+          <div class="bg-slate-50 rounded-2xl p-6 mb-6">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Current Balance</p>
+            <p class="text-2xl font-black text-slate-900">{{ selectedCustomer?.points.toLocaleString() }} <span class="text-sm">pts</span></p>
+          </div>
+
+          <div class="flex items-center space-x-4 mb-8">
+            <button @click="pointsToAdd -= 100" class="w-10 h-10 bg-slate-100 rounded-lg">-</button>
+            <input type="number" v-model="pointsToAdd" class="flex-1 text-center font-black text-indigo-600 border-b-2 border-indigo-100 focus:border-indigo-500 outline-none text-xl" />
+            <button @click="pointsToAdd += 100" class="w-10 h-10 bg-slate-100 rounded-lg">+</button>
+          </div>
+
+          <div class="flex space-x-3">
+            <button @click="isPointsModalOpen = false" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">Cancel</button>
+            <button @click="handleAdjustPoints" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl font-bold shadow-lg">Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Modal -->
+    <div v-if="isDetailsModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+        <div class="p-6 lg:p-8 border-b border-slate-100 flex justify-between items-center">
+           <h3 class="text-xl lg:text-2xl font-black text-slate-900">{{ selectedCustomer?.name }} History</h3>
+           <button @click="isDetailsModalOpen = false" class="text-slate-400 font-bold">X</button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-4">
+           <div v-if="customerHistory.length === 0" class="text-center py-20 opacity-40 font-bold">No purchase history found.</div>
+           <div v-for="order in customerHistory" :key="order.id" class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <div class="flex justify-between items-center mb-3">
+                 <span class="text-[10px] font-black text-indigo-600 uppercase">{{ order.id }}</span>
+                 <span class="text-[10px] font-bold text-slate-400">{{ formatDate(order.timestamp) }}</span>
+              </div>
+              <ul class="space-y-1 mb-3">
+                 <li v-for="item in order.items" :key="item.id" class="text-xs flex justify-between">
+                    <span class="text-slate-600">{{ item.name }} x{{ item.quantity }}</span>
+                    <span class="font-bold">{{ formatCurrency(item.price * item.quantity) }}</span>
+                 </li>
+              </ul>
+              <div class="pt-3 border-t border-slate-200 flex justify-between items-center">
+                 <span class="text-[10px] font-bold text-slate-400 uppercase">Total Spent</span>
+                 <span class="font-black text-slate-900">{{ formatCurrency(order.total) }}</span>
+              </div>
+           </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>

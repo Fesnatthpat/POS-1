@@ -13,7 +13,7 @@ export interface StoreSettings {
 
 export const useSettings = () => {
   const settings = ref<StoreSettings>({
-    name: 'Gemini POS Store',
+    name: 'Vendora',
     logo: '',
     address: '123 Tech Avenue, Digital City',
     phone: '02-123-4567',

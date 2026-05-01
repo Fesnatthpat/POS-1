@@ -20,6 +20,7 @@ const currentProduct = ref<Omit<Product, 'id'>>({
   name: '',
   category: 'Beverages',
   price: 0,
+  cost: 0,
   stock: 0,
   barcode: '',
   sku: '',
@@ -69,6 +70,7 @@ const openAddModal = () => {
     name: '',
     category: categories.value[0],
     price: 0,
+    cost: 0,
     stock: 0,
     barcode: '',
     sku: '',
@@ -84,6 +86,7 @@ const openEditModal = (product: Product) => {
     name: product.name,
     category: product.category,
     price: product.price,
+    cost: product.cost || 0,
     stock: product.stock,
     barcode: product.barcode || '',
     sku: product.sku || '',
@@ -131,26 +134,26 @@ const formatDate = (dateStr: string) => {
 
 <template>
   <div class="p-8">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 lg:mb-10">
       <div>
-        <h1 class="text-3xl font-black text-slate-900 tracking-tight">Products & Inventory</h1>
-        <p class="text-slate-500 font-medium mt-1">Manage your catalog, pricing, and stock levels.</p>
+        <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">Products</h1>
+        <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">Manage catalog and stock levels.</p>
       </div>
-      <div class="flex gap-3">
-        <div class="relative">
+      <div class="flex flex-col sm:flex-row gap-3">
+        <div class="relative w-full sm:w-64">
           <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </span>
-          <input type="text" v-model="searchQuery" placeholder="Search product, barcode..." 
-            class="pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 w-64" />
+          <input type="text" v-model="searchQuery" placeholder="Search product..." 
+            class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500" />
         </div>
-        <button @click="openAddModal" class="flex items-center space-x-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
+        <button @click="openAddModal" class="flex items-center justify-center space-x-2 bg-indigo-600 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all text-sm sm:text-base">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
           </svg>
-          <span>New Product</span>
+          <span class="whitespace-nowrap">New Product</span>
         </button>
       </div>
     </div>
@@ -170,7 +173,7 @@ const formatDate = (dateStr: string) => {
           <p class="text-xl lg:text-2xl font-black text-rose-500">{{ products.filter(p => p.stock === 0).length }}</p>
        </div>
        <div class="bg-white p-4 lg:p-6 rounded-2xl lg:rounded-3xl border border-slate-100 shadow-sm">
-          <p class="text-[9px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 truncate">Inv. Value</p>
+          <p class="text-[9px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 truncate">Total Stock Value</p>
           <p class="text-xl lg:text-2xl font-black text-indigo-600 truncate">{{ formatCurrency(products.reduce((sum, p) => sum + (p.price * p.stock), 0)) }}</p>
        </div>
     </div>
@@ -178,13 +181,14 @@ const formatDate = (dateStr: string) => {
     <!-- Product Table -->
     <div class="bg-white rounded-[1.5rem] lg:rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
       <div class="overflow-x-auto custom-scrollbar">
-        <table class="w-full text-left border-collapse min-w-[800px] lg:min-w-0">
+        <table class="w-full text-left border-collapse min-w-[1000px] lg:min-w-0">
           <thead>
             <tr class="bg-slate-50/50 border-b border-slate-100">
               <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Product Details</th>
               <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Inventory</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Cost</th>
               <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Price</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Status</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Margin</th>
               <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px] text-right">Actions</th>
             </tr>
           </thead>
@@ -210,16 +214,13 @@ const formatDate = (dateStr: string) => {
                   <span class="text-[9px] lg:text-[10px] text-slate-400 font-bold uppercase truncate">{{ product.barcode || '-' }}</span>
                 </div>
               </td>
+              <td class="px-6 lg:px-8 py-4 lg:py-5 text-slate-500 font-bold text-xs lg:text-sm">{{ formatCurrency(product.cost || 0) }}</td>
               <td class="px-6 lg:px-8 py-4 lg:py-5 text-indigo-600 font-black text-xs lg:text-sm">{{ formatCurrency(product.price) }}</td>
               <td class="px-6 lg:px-8 py-4 lg:py-5">
-                <span class="px-2 lg:px-3 py-1 rounded-full text-[9px] lg:text-[10px] font-black uppercase tracking-wider whitespace-nowrap" 
-                  :class="{
-                    'bg-emerald-50 text-emerald-600': product.stock > 5,
-                    'bg-amber-50 text-amber-600': product.stock > 0 && product.stock <= 5,
-                    'bg-rose-50 text-rose-600': product.stock === 0
-                  }">
-                  {{ product.stock === 0 ? 'Out of Stock' : (product.stock <= 5 ? 'Low Stock' : 'In Stock') }}
-                </span>
+                 <div class="flex flex-col">
+                    <span class="text-emerald-600 font-black text-xs lg:text-sm">{{ formatCurrency(product.price - (product.cost || 0)) }}</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase">Profit / Unit</span>
+                 </div>
               </td>
               <td class="px-6 lg:px-8 py-4 lg:py-5 text-right">
                 <div class="flex justify-end space-x-1 lg:space-x-2">
@@ -295,10 +296,17 @@ const formatDate = (dateStr: string) => {
                 </select>
               </div>
               
-              <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Price (฿)</label>
-                <input type="number" required v-model="currentProduct.price" step="0.01"
-                  class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 font-black text-indigo-600" />
+              <div class="grid grid-cols-2 gap-4">
+                 <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Cost (฿)</label>
+                    <input type="number" required v-model="currentProduct.cost" step="0.01"
+                      class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-600" />
+                 </div>
+                 <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Price (฿)</label>
+                    <input type="number" required v-model="currentProduct.price" step="0.01"
+                      class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 font-black text-indigo-600" />
+                 </div>
               </div>
 
               <div>

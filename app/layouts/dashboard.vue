@@ -1,14 +1,14 @@
 <template>
-  <div class="min-h-screen bg-slate-50 flex overflow-hidden">
+  <div class="min-h-screen bg-slate-50 flex overflow-hidden font-sans">
     <!-- Sidebar (Desktop) -->
     <aside class="w-64 lg:w-72 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col hidden lg:flex">
       <!-- Sidebar Header / Logo -->
       <div class="h-20 flex items-center px-8 border-b border-slate-800">
         <NuxtLink to="/dashboard" class="flex items-center space-x-2 group">
           <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-indigo-500/20 leading-none">
-            <span class="font-black text-sm italic">P</span>
+            <span class="font-black text-sm italic">V</span>
           </div>
-          <span class="text-xl font-bold tracking-tight text-white">POS<span class="text-indigo-500">.</span></span>
+          <span class="text-xl font-bold tracking-tight text-white uppercase italic">Vendora<span class="text-indigo-500">.</span></span>
         </NuxtLink>
       </div>
 
@@ -24,7 +24,7 @@
 
       <!-- Sidebar Footer -->
       <div class="p-4 border-t border-slate-800">
-        <div class="bg-slate-800/50 rounded-2xl p-4 flex items-center space-x-3">
+        <div class="bg-slate-800/50 rounded-2xl p-4 flex items-center space-x-3 text-left">
           <div class="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0">JD</div>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-bold text-white truncate">John Doe</p>
@@ -58,8 +58,8 @@
          <aside v-if="isMobileMenuOpen" class="fixed inset-y-0 left-0 w-72 bg-slate-900 text-slate-300 flex flex-col z-[100] shadow-2xl">
             <div class="h-20 flex items-center justify-between px-8 border-b border-slate-800">
               <NuxtLink to="/dashboard" class="flex items-center space-x-2" @click="isMobileMenuOpen = false">
-                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black italic">P</div>
-                <span class="text-xl font-bold text-white tracking-tight">POS.</span>
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black italic">V</div>
+                <span class="text-xl font-bold text-white tracking-tight uppercase italic">Vendora.</span>
               </NuxtLink>
               <button @click="isMobileMenuOpen = false" class="p-2 text-slate-500 hover:text-white transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -76,7 +76,7 @@
               </NuxtLink>
             </nav>
             <div class="p-4 border-t border-slate-800">
-               <div class="bg-slate-800/50 rounded-2xl p-4 flex items-center space-x-3">
+               <div class="bg-slate-800/50 rounded-2xl p-4 flex items-center space-x-3 text-left">
                  <div class="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center text-white font-bold">JD</div>
                  <div class="flex-1 min-w-0">
                    <p class="text-sm font-bold text-white truncate">John Doe</p>
@@ -109,8 +109,8 @@
               class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48 md:w-64 lg:w-80 transition-all" />
           </div>
           
-          <!-- Mobile Title (Hidden on Desktop) -->
-          <span class="lg:hidden font-black text-slate-900 tracking-tight text-lg">POS.</span>
+          <!-- Mobile Title -->
+          <span class="lg:hidden font-black text-slate-900 tracking-tight text-lg uppercase italic">Vendora<span class="text-indigo-500">.</span></span>
         </div>
 
         <div class="flex items-center space-x-2 sm:space-x-4">
@@ -129,13 +129,6 @@
         <slot />
       </main>
     </div>
-
-    <style>
-      .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
-      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-      .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    </style>
   </div>
 </template>
 
@@ -143,12 +136,19 @@
 import { ref, h } from 'vue'
 
 const isMobileMenuOpen = ref(false)
+const route = useRoute()
+
+// Dynamic Head Title
+useHead({
+  titleTemplate: (titleChunk) => {
+    return titleChunk ? `${titleChunk} - Vendora` : 'Vendora'
+  }
+})
 
 const IconOverview = () => h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor' }, [h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' })])
 const IconPOS = () => h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor' }, [h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z' })])
 const IconOrders = () => h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor' }, [h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' })])
 const IconInventory = () => h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor' }, [h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' })])
-
 const IconCustomers = () => h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor' }, [h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' })])
 const IconStaff = () => h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor' }, [h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' })])
 const IconReports = () => h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor' }, [h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' })])
@@ -161,7 +161,7 @@ const navLinks = [
   { to: '/dashboard/products', label: 'Inventory', icon: IconInventory },
   { to: '/dashboard/customers', label: 'Customers', icon: IconCustomers },
   { to: '/dashboard/staff', label: 'Staff Management', icon: IconStaff },
-  { to: '/dashboard/reports', label: 'Reports & Analytics', icon: IconReports },
-  { to: '/dashboard/settings', label: 'Store Settings', icon: IconSettings },
+  { to: '/dashboard/reports', label: 'Reports', icon: IconReports },
+  { to: '/dashboard/settings', label: 'Settings', icon: IconSettings },
 ]
 </script>
