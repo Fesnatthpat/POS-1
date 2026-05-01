@@ -1,86 +1,145 @@
 <script setup lang="ts">
+import { useOrders } from '~/composables/useOrders'
+import { useSettings } from '~/composables/useSettings'
+
+const { orders, getBestSellers } = useOrders()
+const { settings } = useSettings()
+
 definePageMeta({
   layout: 'dashboard'
 })
 
-const reports = [
-  { title: 'Total Sales', value: '฿152,400.00', trend: '+14%', period: 'Last 30 days' },
-  { title: 'Average Order Value', value: '฿850.00', trend: '+5.2%', period: 'Last 30 days' },
-  { title: 'Top Category', value: 'Food & Beverage', trend: 'Stable', period: 'Last 30 days' },
-  { title: 'Refund Rate', value: '0.8%', trend: '-2%', period: 'Last 30 days' },
-]
+// --- State ---
+const selectedDate = ref(new Date().toISOString().split('T')[0])
 
-const topProducts = [
-  { name: 'Espresso Roast', sales: 450, revenue: '฿24,500' },
-  { name: 'Whole Wheat Bread', sales: 320, revenue: '฿12,800' },
-  { name: 'Organic Honey', sales: 180, revenue: '฿9,900' },
-  { name: 'Green Tea Pack', sales: 150, revenue: '฿7,500' },
-]
+// --- Computed ---
+const dailyStats = computed(() => {
+  const targetDate = new Date(selectedDate.value).toDateString()
+  const dayOrders = orders.value.filter(o => new Date(o.timestamp).toDateString() === targetDate)
+  
+  const revenue = dayOrders.reduce((sum, o) => sum + o.total, 0)
+  const count = dayOrders.length
+  const avg = count > 0 ? revenue / count : 0
+  
+  return { revenue, count, avg, orders: dayOrders }
+})
+
+const bestSellers = computed(() => getBestSellers(5))
+
+const formatCurrency = (val: number) => {
+  return new Intl.NumberFormat('th-TH', { style: 'currency', currency: settings.value.currency || 'THB' }).format(val)
+}
+
+const formatDate = (dateStr: string) => {
+  return new Date(dateStr).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+}
 </script>
 
 <template>
-  <div class="p-8">
-    <div class="mb-10">
-      <h1 class="text-3xl font-black text-slate-900 tracking-tight">Reports & Analytics</h1>
-      <p class="text-slate-500 font-medium mt-1">Deep dive into your business performance and trends.</p>
-    </div>
-
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-      <div v-for="report in reports" :key="report.title" 
-        class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{{ report.title }}</p>
-        <h3 class="text-2xl font-black text-slate-900 mb-2">{{ report.value }}</h3>
-        <div class="flex items-center space-x-2">
-          <span :class="[report.trend.startsWith('+') ? 'text-emerald-600 bg-emerald-50' : report.trend.startsWith('-') ? 'text-rose-600 bg-rose-50' : 'text-slate-500 bg-slate-50']" 
-            class="text-[10px] font-black px-2 py-0.5 rounded-md">
-            {{ report.trend }}
-          </span>
-          <span class="text-[10px] text-slate-400 font-bold uppercase">{{ report.period }}</span>
-        </div>
+  <div class="p-4 sm:p-6 lg:p-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 lg:gap-6 mb-8 lg:mb-10">
+      <div>
+        <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">Sales Reports</h1>
+        <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">Track your business performance.</p>
+      </div>
+      <div class="flex items-center gap-3 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm w-full md:w-auto">
+        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Date:</span>
+        <input type="date" v-model="selectedDate" 
+          class="bg-slate-50 border-none rounded-xl px-3 py-2 font-bold text-slate-900 focus:ring-0 text-sm flex-1 md:flex-none" />
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- Sales Chart Placeholder -->
-      <div class="lg:col-span-2 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col min-h-[400px]">
-        <div class="flex items-center justify-between mb-8">
-          <h3 class="text-xl font-bold text-slate-900">Revenue Growth</h3>
-          <select class="bg-slate-50 border-none rounded-xl text-xs font-bold text-slate-600 px-4 py-2 focus:ring-0">
-            <option>Last 7 Days</option>
-            <option>Last 30 Days</option>
-            <option>Last 12 Months</option>
-          </select>
-        </div>
-        <div class="flex-1 bg-slate-50 rounded-2xl border border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden">
-          <div class="absolute inset-0 flex items-end px-8 pb-8 space-x-4">
-            <div v-for="i in 12" :key="i" 
-              class="flex-1 bg-indigo-500/20 rounded-t-lg transition-all hover:bg-indigo-500"
-              :style="{ height: `${Math.random() * 60 + 20}%` }">
-            </div>
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 mb-8 lg:mb-10">
+      <div class="bg-indigo-600 p-6 lg:p-8 rounded-3xl lg:rounded-[2rem] text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
+        <div class="relative z-10">
+          <p class="text-[10px] lg:text-xs font-bold opacity-70 uppercase tracking-widest mb-1 lg:mb-2">Total Revenue</p>
+          <p class="text-2xl lg:text-4xl font-black truncate">{{ formatCurrency(dailyStats.revenue) }}</p>
+          <div class="mt-4 flex items-center text-[10px] font-bold bg-white/20 w-max px-2 py-0.5 rounded-full">
+            Today
           </div>
-          <span class="relative z-10 text-slate-400 font-medium italic">Monthly Revenue Visualization</span>
+        </div>
+        <div class="absolute -right-4 -bottom-4 opacity-10">
+           <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 lg:h-32 lg:w-32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+           </svg>
         </div>
       </div>
 
-      <!-- Top Products -->
-      <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
-        <h3 class="text-xl font-bold text-slate-900 mb-6">Top Selling Products</h3>
-        <div class="space-y-6">
-          <div v-for="product in topProducts" :key="product.name" class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-lg">📦</div>
-              <div>
-                <p class="text-sm font-bold text-slate-900">{{ product.name }}</p>
-                <p class="text-xs text-slate-500 font-medium">{{ product.sales }} sales</p>
-              </div>
-            </div>
-            <p class="text-sm font-black text-slate-900">{{ product.revenue }}</p>
+      <div class="bg-white p-6 lg:p-8 rounded-3xl lg:rounded-[2rem] border border-slate-100 shadow-sm">
+        <p class="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 lg:mb-2">Orders Today</p>
+        <p class="text-2xl lg:text-4xl font-black text-slate-900">{{ dailyStats.count }}</p>
+        <p class="text-[10px] lg:text-sm text-slate-500 font-medium mt-3 lg:mt-4">Avg: <span class="font-bold text-slate-900">{{ formatCurrency(dailyStats.avg) }}</span></p>
+      </div>
+
+      <div class="bg-white p-6 lg:p-8 rounded-3xl lg:rounded-[2rem] border border-slate-100 shadow-sm">
+        <p class="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 lg:mb-2">Life-time Orders</p>
+        <p class="text-2xl lg:text-4xl font-black text-slate-900">{{ orders.length }}</p>
+        <p class="text-[10px] lg:text-sm text-slate-500 font-medium mt-3 lg:mt-4">Rev: <span class="font-bold text-indigo-600">{{ formatCurrency(orders.reduce((s,o) => s+o.total, 0)) }}</span></p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+      <!-- Recent Orders -->
+      <div class="lg:col-span-2 space-y-4 lg:space-y-6">
+        <div class="flex items-center justify-between px-2 lg:px-0">
+           <h2 class="text-xl font-black text-slate-900">Transactions</h2>
+           <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ dailyStats.orders.length }} Items</span>
+        </div>
+        
+        <div class="bg-white rounded-[1.5rem] lg:rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left min-w-[600px] lg:min-w-0">
+              <thead>
+                <tr class="bg-slate-50/50 border-b border-slate-100">
+                  <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Time / ID</th>
+                  <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Items</th>
+                  <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-50">
+                <tr v-if="dailyStats.orders.length === 0">
+                  <td colspan="3" class="px-6 lg:px-8 py-10 text-center text-slate-400 font-bold">No transactions for this date.</td>
+                </tr>
+                <tr v-for="order in dailyStats.orders.slice().reverse()" :key="order.id" class="hover:bg-slate-50/50 transition-colors">
+                  <td class="px-6 lg:px-8 py-4 lg:py-5">
+                    <div class="flex flex-col min-w-0">
+                      <span class="font-bold text-slate-900 text-xs lg:text-sm">{{ formatDate(order.timestamp) }}</span>
+                      <span class="text-[9px] lg:text-[10px] text-slate-400 font-bold truncate">{{ order.id }}</span>
+                    </div>
+                  </td>
+                  <td class="px-6 lg:px-8 py-4 lg:py-5">
+                    <span class="text-xs lg:text-sm font-medium text-slate-600">{{ order.items.length }} items</span>
+                    <span class="ml-2 px-1.5 py-0.5 bg-slate-100 rounded text-[8px] font-black uppercase text-slate-500">{{ order.paymentMethod }}</span>
+                  </td>
+                  <td class="px-6 lg:px-8 py-4 lg:py-5 text-right font-black text-slate-900 text-xs lg:text-sm">
+                    {{ formatCurrency(order.total) }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-        <button class="w-full mt-8 py-3 text-sm font-bold text-indigo-600 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-colors">
-          View All Products
-        </button>
+      </div>
+
+      <!-- Best Sellers -->
+      <div class="space-y-4 lg:space-y-6">
+        <h2 class="text-xl font-black text-slate-900 px-2 lg:px-0">Top Products</h2>
+        <div class="bg-white p-6 lg:p-8 rounded-[1.5rem] lg:rounded-[2rem] border border-slate-100 shadow-sm space-y-4 lg:space-y-6">
+          <div v-if="bestSellers.length === 0" class="text-center py-10 text-slate-400 font-bold">No data yet.</div>
+          <div v-for="(item, index) in bestSellers" :key="index" class="flex items-center gap-3 lg:gap-4">
+            <div class="w-8 h-8 lg:w-10 lg:h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center font-black text-xs lg:text-sm flex-shrink-0">
+              {{ index + 1 }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-slate-900 text-xs lg:text-sm truncate">{{ item.name }}</p>
+              <p class="text-[9px] lg:text-[10px] text-slate-400 font-bold uppercase truncate">{{ item.quantity }} units sold</p>
+            </div>
+            <div class="text-right flex-shrink-0">
+               <p class="font-black text-slate-900 text-xs lg:text-sm">{{ formatCurrency(item.revenue) }}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

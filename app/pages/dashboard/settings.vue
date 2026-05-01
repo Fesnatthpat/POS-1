@@ -1,78 +1,140 @@
 <script setup lang="ts">
+import { useSettings, type StoreSettings } from '~/composables/useSettings'
+
+const { settings, saveSettings } = useSettings()
+
 definePageMeta({
   layout: 'dashboard'
 })
 
-const settingsSections = [
-  {
-    title: 'Store Information',
-    description: 'Basic details about your business.',
-    fields: [
-      { label: 'Store Name', type: 'text', placeholder: 'My Awesome Shop', value: 'My Awesome Shop' },
-      { label: 'Business Email', type: 'email', placeholder: 'contact@shop.com', value: 'contact@shop.com' },
-      { label: 'Phone Number', type: 'tel', placeholder: '081-234-5678', value: '081-234-5678' },
-    ]
-  },
-  {
-    title: 'Localization',
-    description: 'Currency, timezone, and language.',
-    fields: [
-      { label: 'Currency', type: 'select', options: ['THB (฿)', 'USD ($)', 'EUR (€)'], value: 'THB (฿)' },
-      { label: 'Timezone', type: 'select', options: ['(GMT+07:00) Bangkok', '(GMT+00:00) London'], value: '(GMT+07:00) Bangkok' },
-    ]
-  },
-  {
-    title: 'Taxes & Invoicing',
-    description: 'Manage tax rates and invoice formatting.',
-    fields: [
-      { label: 'VAT Rate (%)', type: 'number', placeholder: '7', value: '7' },
-      { label: 'Tax ID', type: 'text', placeholder: '1234567890123', value: '1234567890123' },
-    ]
-  }
-]
+// --- State ---
+const form = ref<StoreSettings>({ ...settings.value })
+const isSaving = ref(false)
+const showSuccess = ref(false)
+
+// Watch for initial load of settings from composable
+watch(settings, (newVal) => {
+  form.value = { ...newVal }
+}, { immediate: true })
+
+const handleSave = async () => {
+  isSaving.value = true
+  saveSettings(form.value)
+  
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 800))
+  
+  isSaving.value = false
+  showSuccess.value = true
+  setTimeout(() => showSuccess.value = false, 3000)
+}
 </script>
 
 <template>
-  <div class="p-8 max-w-4xl">
-    <div class="mb-10">
-      <h1 class="text-3xl font-black text-slate-900 tracking-tight">Store Settings</h1>
-      <p class="text-slate-500 font-medium mt-1">Configure your store preferences and business details.</p>
+  <div class="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+    <div class="mb-8 lg:mb-10">
+      <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">Settings</h1>
+      <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">Configure store profile and operational defaults.</p>
     </div>
 
-    <div class="space-y-8">
-      <div v-for="section in settingsSections" :key="section.title" 
-        class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-        <div class="p-8 border-b border-slate-50">
-          <h3 class="text-xl font-bold text-slate-900">{{ section.title }}</h3>
-          <p class="text-sm text-slate-500 font-medium mt-1">{{ section.description }}</p>
+    <div class="space-y-8 lg:space-y-12">
+      <!-- Store Profile -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8">
+        <div class="md:col-span-1">
+          <h3 class="text-lg font-bold text-slate-900 mb-1 lg:mb-2">Store Profile</h3>
+          <p class="text-xs lg:text-sm text-slate-500">Your store's identity shown on receipts.</p>
         </div>
         
-        <div class="p-8 space-y-6">
-          <div v-for="field in section.fields" :key="field.label" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-            <label class="text-sm font-bold text-slate-700">{{ field.label }}</label>
-            <div class="md:col-span-2">
-              <template v-if="field.type === 'select'">
-                <select class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all appearance-none">
-                  <option v-for="opt in field.options" :key="opt">{{ opt }}</option>
-                </select>
-              </template>
-              <template v-else>
-                <input :type="field.type" :value="field.value" :placeholder="field.placeholder"
-                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all" />
-              </template>
+        <div class="md:col-span-2 space-y-4 lg:space-y-6">
+          <div class="bg-white p-6 lg:p-8 rounded-[1.5rem] lg:rounded-[2rem] border border-slate-100 shadow-sm space-y-4 lg:space-y-6">
+            <div>
+              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Store Name</label>
+              <input type="text" v-model="form.name" 
+                class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm" />
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+               <div>
+                  <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Phone</label>
+                  <input type="text" v-model="form.phone" 
+                    class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm" />
+               </div>
+               <div>
+                  <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Currency</label>
+                  <select v-model="form.currency" 
+                    class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm">
+                    <option value="THB">THB (฿)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                  </select>
+               </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Address</label>
+              <textarea v-model="form.address" rows="3"
+                class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm"></textarea>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="flex items-center justify-end space-x-4 pt-4">
-        <button class="px-8 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-all">
-          Discard Changes
-        </button>
-        <button class="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
-          Save Settings
-        </button>
+      <!-- Tax & Compliance -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8 border-t border-slate-100 pt-8 lg:pt-12">
+        <div class="md:col-span-1">
+          <h3 class="text-lg font-bold text-slate-900 mb-1 lg:mb-2">Tax & Billing</h3>
+          <p class="text-xs lg:text-sm text-slate-500">Manage tax calculation settings.</p>
+        </div>
+
+        <div class="md:col-span-2 space-y-4 lg:space-y-6">
+          <div class="bg-white p-6 lg:p-8 rounded-[1.5rem] lg:rounded-[2rem] border border-slate-100 shadow-sm space-y-4 lg:space-y-6">
+            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+               <div class="min-w-0 pr-4">
+                  <p class="font-bold text-slate-900 text-sm lg:text-base">Include Tax in Price</p>
+                  <p class="text-[9px] lg:text-[10px] text-slate-400 font-bold uppercase truncate">Prices already include VAT</p>
+               </div>
+               <button @click="form.includeTax = !form.includeTax" 
+                 class="w-12 h-6 rounded-full transition-colors relative flex-shrink-0"
+                 :class="form.includeTax ? 'bg-indigo-600' : 'bg-slate-300'">
+                 <div class="absolute top-1 w-4 h-4 bg-white rounded-full transition-all"
+                   :class="form.includeTax ? 'right-1' : 'left-1'"></div>
+               </button>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tax Rate (%)</label>
+              <input type="number" v-model="form.taxRate" 
+                class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm" />
+            </div>
+          </div>
+        </div>
       </div>
+
+      <!-- Receipt Note -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8 border-t border-slate-100 pt-8 lg:pt-12">
+        <div class="md:col-span-1">
+          <h3 class="text-lg font-bold text-slate-900 mb-1 lg:mb-2">Receipt Note</h3>
+          <p class="text-xs lg:text-sm text-slate-500">Footer message on receipts.</p>
+        </div>
+
+        <div class="md:col-span-2">
+          <div class="bg-white p-6 lg:p-8 rounded-[1.5rem] lg:rounded-[2rem] border border-slate-100 shadow-sm">
+             <textarea v-model="form.receiptNote" rows="2"
+               class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm"
+               placeholder="Thank you!"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Bar -->
+    <div class="mt-12 flex flex-col sm:flex-row items-center justify-end gap-4 border-t border-slate-100 pt-8">
+      <p v-if="showSuccess" class="text-emerald-600 font-bold text-xs lg:text-sm animate-bounce order-2 sm:order-1">✓ Saved!</p>
+      <button @click="handleSave" :disabled="isSaving"
+        class="w-full sm:w-auto px-10 py-4 bg-indigo-600 text-white rounded-xl lg:rounded-2xl font-black shadow-xl shadow-indigo-100 hover:bg-indigo-700 disabled:opacity-50 transition-all flex items-center justify-center gap-2 order-1 sm:order-2">
+        <span v-if="isSaving" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+        {{ isSaving ? 'Saving...' : 'Save Changes' }}
+      </button>
     </div>
   </div>
 </template>
