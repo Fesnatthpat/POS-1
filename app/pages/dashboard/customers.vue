@@ -270,8 +270,9 @@ const formatDate = (dateStr: string) => {
 
           <div class="bg-indigo-50/50 p-1.5 rounded-2xl border border-indigo-100 mb-8 flex items-center">
             <button 
-              @click="pointsToAdd--" 
+              @click="pointsToAdd > 0 ? pointsToAdd-- : null" 
               class="w-12 h-12 flex items-center justify-center bg-white text-indigo-600 rounded-xl shadow-sm border border-indigo-100 hover:bg-indigo-50 active:scale-95 transition-all font-black text-2xl"
+              :class="{ 'opacity-50 cursor-not-allowed': pointsToAdd <= 0 }"
             >
               -
             </button>
@@ -280,14 +281,17 @@ const formatDate = (dateStr: string) => {
               <input 
                 type="number" 
                 v-model="pointsToAdd" 
+                :min="0"
+                :max="settings.loyaltyPointThreshold"
                 class="w-full text-center font-black text-indigo-600 bg-transparent outline-none text-3xl [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
               />
-              <p class="text-[9px] font-black text-indigo-400 uppercase tracking-widest mt-1">จำนวนที่ต้องการปรับ</p>
+              <p class="text-[9px] font-black text-indigo-400 uppercase tracking-widest mt-1">จำนวนที่ต้องการปรับ (สูงสุด {{ settings.loyaltyPointThreshold }})</p>
             </div>
 
             <button 
-              @click="pointsToAdd++" 
+              @click="pointsToAdd < settings.loyaltyPointThreshold ? pointsToAdd++ : null" 
               class="w-12 h-12 flex items-center justify-center bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 active:scale-95 transition-all font-black text-2xl"
+              :class="{ 'opacity-50 cursor-not-allowed': pointsToAdd >= settings.loyaltyPointThreshold }"
             >
               +
             </button>
