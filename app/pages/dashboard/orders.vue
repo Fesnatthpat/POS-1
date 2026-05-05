@@ -8,7 +8,8 @@ const { customers } = useCustomers()
 const { settings } = useSettings()
 
 definePageMeta({
-  layout: 'dashboard'
+  layout: 'dashboard',
+  middleware: ['feature-gate']
 })
 
 // --- State ---

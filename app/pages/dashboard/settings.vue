@@ -4,7 +4,8 @@ import { useSettings, type StoreSettings } from '~/composables/useSettings'
 const { settings, saveSettings } = useSettings()
 
 definePageMeta({
-  layout: 'dashboard'
+  layout: 'dashboard',
+  middleware: ['feature-gate']
 })
 
 // --- State ---

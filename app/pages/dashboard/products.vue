@@ -6,7 +6,8 @@ const { products, categories, addProduct, updateProduct, deleteProduct, addStock
 const { settings } = useSettings()
 
 definePageMeta({
-  layout: 'dashboard'
+  layout: 'dashboard',
+  middleware: ['feature-gate']
 })
 
 // --- State ---

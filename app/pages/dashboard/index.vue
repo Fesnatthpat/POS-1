@@ -3,11 +3,13 @@ import { useOrders } from '~/composables/useOrders'
 import { useProducts } from '~/composables/useProducts'
 import { useCustomers } from '~/composables/useCustomers'
 import { useSettings } from '~/composables/useSettings'
+import { useFeatures } from '~/composables/useFeatures'
 
 const { orders } = useOrders()
 const { products } = useProducts()
 const { customers } = useCustomers()
 const { settings } = useSettings()
+const { features } = useFeatures()
 
 definePageMeta({
   layout: 'dashboard'
@@ -86,7 +88,7 @@ const formatCurrency = (val: number) => {
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
       <!-- Chart Area -->
       <div class="lg:col-span-2 space-y-6">
-         <div class="bg-slate-900 p-6 lg:p-10 rounded-3xl lg:rounded-[2.5rem] text-white overflow-hidden relative">
+         <div v-if="features.enableDetailedReports" class="bg-slate-900 p-6 lg:p-10 rounded-3xl lg:rounded-[2.5rem] text-white overflow-hidden relative">
             <h3 class="text-xl lg:text-2xl font-black mb-1 lg:mb-2">ประสิทธิภาพการขาย</h3>
             <p class="text-xs lg:text-sm text-slate-400 font-medium mb-8">การแสดงแนวโน้มรายได้รายสัปดาห์</p>
             
@@ -105,7 +107,7 @@ const formatCurrency = (val: number) => {
          </div>
 
          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
-            <NuxtLink to="/dashboard/pos" class="aspect-square bg-white border border-slate-100 p-4 lg:p-6 rounded-2xl lg:rounded-[2rem] flex flex-col items-center justify-center gap-2 lg:gap-3 hover:bg-slate-50 transition-all shadow-sm">
+            <NuxtLink v-if="features.enableNewPOS" to="/dashboard/pos" class="aspect-square bg-white border border-slate-100 p-4 lg:p-6 rounded-2xl lg:rounded-[2rem] flex flex-col items-center justify-center gap-2 lg:gap-3 hover:bg-slate-50 transition-all shadow-sm">
                <span class="text-2xl lg:text-3xl">🛒</span>
                <span class="font-bold text-[10px] lg:text-sm text-slate-900">ระบบขาย POS</span>
             </NuxtLink>
@@ -113,11 +115,11 @@ const formatCurrency = (val: number) => {
                <span class="text-2xl lg:text-3xl">➕</span>
                <span class="font-bold text-[10px] lg:text-sm text-slate-900">เพิ่มสินค้า</span>
             </NuxtLink>
-            <NuxtLink to="/dashboard/reports" class="aspect-square bg-white border border-slate-100 p-4 lg:p-6 rounded-2xl lg:rounded-[2rem] flex flex-col items-center justify-center gap-2 lg:gap-3 hover:bg-slate-50 transition-all shadow-sm">
+            <NuxtLink v-if="features.enableDetailedReports" to="/dashboard/reports" class="aspect-square bg-white border border-slate-100 p-4 lg:p-6 rounded-2xl lg:rounded-[2rem] flex flex-col items-center justify-center gap-2 lg:gap-3 hover:bg-slate-50 transition-all shadow-sm">
                <span class="text-2xl lg:text-3xl">📊</span>
                <span class="font-bold text-[10px] lg:text-sm text-slate-900">รายงาน</span>
             </NuxtLink>
-            <NuxtLink to="/dashboard/customers" class="aspect-square bg-white border border-slate-100 p-4 lg:p-6 rounded-2xl lg:rounded-[2rem] flex flex-col items-center justify-center gap-2 lg:gap-3 hover:bg-slate-50 transition-all shadow-sm">
+            <NuxtLink v-if="features.enableCustomerLoyalty" to="/dashboard/customers" class="aspect-square bg-white border border-slate-100 p-4 lg:p-6 rounded-2xl lg:rounded-[2rem] flex flex-col items-center justify-center gap-2 lg:gap-3 hover:bg-slate-50 transition-all shadow-sm">
                <span class="text-2xl lg:text-3xl">👥</span>
                <span class="font-bold text-[10px] lg:text-sm text-slate-900">ลูกค้า</span>
             </NuxtLink>
@@ -125,7 +127,7 @@ const formatCurrency = (val: number) => {
       </div>
 
       <!-- Inventory Alerts Sidebar -->
-      <div class="space-y-6">
+      <div v-if="features.enableInventoryAlerts" class="space-y-6">
          <div class="flex items-center justify-between">
             <h2 class="text-xl font-black text-slate-900">สถานะคลังสินค้า</h2>
             <span class="px-2 py-1 bg-rose-100 text-rose-600 rounded text-[9px] font-black uppercase">{{ lowStockItems.length + outOfStockItems.length }} การแจ้งเตือน</span>
@@ -163,7 +165,7 @@ const formatCurrency = (val: number) => {
                   <span class="text-indigo-600/60 font-bold">กำไรขั้นต้นวันนี้</span>
                   <span class="font-black text-indigo-900">{{ todayRevenue > 0 ? ((todayProfit / todayRevenue) * 100).toFixed(1) : 0 }}%</span>
                </div>
-               <div class="flex justify-between items-center text-xs">
+               <div v-if="features.enableStaffAttendance" class="flex justify-between items-center text-xs">
                   <span class="text-indigo-600/60 font-bold">พนักงานที่ปฏิบัติงาน</span>
                   <span class="font-black text-indigo-900">2 คน</span>
                </div>

@@ -6,7 +6,8 @@ const { orders, getBestSellers } = useOrders()
 const { settings } = useSettings()
 
 definePageMeta({
-  layout: 'dashboard'
+  layout: 'dashboard',
+  middleware: ['feature-gate']
 })
 
 // --- State ---

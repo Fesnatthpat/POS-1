@@ -4,7 +4,8 @@ import { useStaff, type Staff } from '~/composables/useStaff'
 const { staffMembers, addStaff, updateStaff, deleteStaff } = useStaff()
 
 definePageMeta({
-  layout: 'dashboard'
+  layout: 'dashboard',
+  middleware: ['feature-gate']
 })
 
 // --- State ---

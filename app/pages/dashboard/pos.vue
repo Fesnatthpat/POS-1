@@ -3,14 +3,17 @@ import { useCustomers } from '~/composables/useCustomers'
 import { useProducts } from '~/composables/useProducts'
 import { useOrders } from '~/composables/useOrders'
 import { useSettings } from '~/composables/useSettings'
+import { useFeatures } from '~/composables/useFeatures'
 
 const { customers, addPoints } = useCustomers()
 const { products, deductStock } = useProducts()
 const { addOrder, holdBill, heldBills, resumeBill, deleteHeldBill } = useOrders()
 const { settings } = useSettings()
+const { features } = useFeatures()
 
 definePageMeta({
-  layout: 'dashboard'
+  layout: 'dashboard',
+  middleware: ['feature-gate']
 })
 
 useHead({
@@ -239,6 +242,8 @@ const completeCheckout = () => {
   discountValue.value = 0
   isCartOpenMobile.value = false
 }
+
+const envName = computed(() => process.env.NODE_ENV || 'development')
 
 const formatCurrency = (val: number) => {
   return new Intl.NumberFormat('th-TH', { style: 'currency', currency: settings.value.currency || 'THB' }).format(val)
@@ -764,6 +769,19 @@ const formatDate = (dateStr: string) => {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Debug Info -->
+    <div v-if="features.debugMode" class="fixed bottom-4 left-4 z-[200] bg-slate-900 text-white p-4 rounded-2xl text-[10px] font-mono opacity-80 hover:opacity-100 transition-opacity max-w-xs shadow-2xl">
+      <p class="font-bold border-b border-white/20 pb-1 mb-1 text-indigo-400">DEBUG MODE ENABLED</p>
+      <div class="space-y-1 mt-2">
+        <p><span class="text-slate-400">Cart:</span> {{ cart.length }} items</p>
+        <p><span class="text-slate-400">Subtotal:</span> {{ subtotal }}</p>
+        <p><span class="text-slate-400">Total:</span> {{ cartTotal }}</p>
+        <p><span class="text-slate-400">Customer:</span> {{ selectedCustomerId || 'None' }}</p>
+        <p><span class="text-slate-400">Payment:</span> {{ paymentMethod }}</p>
+        <p class="pt-1 border-t border-white/10 mt-1"><span class="text-indigo-400">ENV:</span> {{ envName }}</p>
       </div>
     </div>
   </div>
