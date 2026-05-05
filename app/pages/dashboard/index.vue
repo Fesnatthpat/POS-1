@@ -7,13 +7,21 @@ import { useFeatures } from '~/composables/useFeatures'
 
 const { orders } = useOrders()
 const { products } = useProducts()
-const { customers } = useCustomers()
+const { customers, redeemReward } = useCustomers()
 const { settings } = useSettings()
 const { features } = useFeatures()
 
 definePageMeta({
   layout: 'dashboard'
 })
+
+// --- Actions ---
+const handleRedeemReward = (customer: any) => {
+  const threshold = settings.value.loyaltyPointThreshold || 10
+  if (confirm(`ยืนยันการแลกรางวัลสำหรับลูกค้า "${customer.name}"? (จะหัก ${threshold} แต้ม)`)) {
+    redeemReward(customer.id, threshold)
+  }
+}
 
 // --- Computed ---
 const today = new Date().toDateString()
@@ -44,6 +52,15 @@ const salesTrend = computed(() => {
 const formatCurrency = (val: number) => {
   return new Intl.NumberFormat('th-TH', { style: 'currency', currency: settings.value.currency || 'THB' }).format(val)
 }
+
+// --- Loyalty Milestone ---
+const customersReachedThreshold = computed(() => {
+   if (!features.value.enableCustomers) return []
+   return customers.value
+      .filter(c => c.points >= (settings.value.loyaltyPointThreshold || 10))
+      .sort((a, b) => b.points - a.points)
+      .slice(0, 5)
+})
 </script>
 
 <template>
@@ -170,6 +187,39 @@ const formatCurrency = (val: number) => {
                   <span class="font-black text-indigo-900">2 คน</span>
                </div>
             </div>
+         </div>
+
+         <!-- Rewards & Milestones (New) -->
+         <div v-if="features.enableCustomers && customersReachedThreshold.length > 0" class="space-y-4">
+            <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
+               <span>สมาชิกที่ครบกำหนด</span>
+               <span class="text-lg">🏆</span>
+            </h2>
+            <div class="space-y-3">
+               <div v-for="c in customersReachedThreshold" :key="c.id" 
+                  class="p-4 bg-white border border-emerald-100 rounded-2xl shadow-sm flex items-center gap-3 relative overflow-hidden group">
+                  <div class="absolute right-0 top-0 w-1 h-full bg-emerald-500"></div>
+                  <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center font-black flex-shrink-0">
+                     {{ c.name.charAt(0) }}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                     <p class="font-black text-slate-900 text-sm truncate">{{ c.name }}</p>
+                     <p class="text-[10px] font-bold text-emerald-600 uppercase">ครบ {{ settings.loyaltyPointThreshold }} แต้มแล้ว!</p>
+                  </div>
+                  <div class="flex flex-col items-end gap-1">
+                     <button v-if="c.points >= (settings.loyaltyPointThreshold || 10)" 
+                        @click="handleRedeemReward(c)"
+                        class="px-2 py-1 bg-emerald-600 text-white text-[9px] font-black rounded-lg hover:bg-emerald-700 transition-all shadow-sm">
+                        แลกรางวัล
+                     </button>
+                     <div class="text-right">
+                        <p class="text-[9px] font-black text-slate-400 uppercase leading-tight">รางวัลรวม</p>
+                        <p class="font-black text-slate-900 text-xs leading-tight">{{ c.rewardsEarned || 0 }} ครั้ง</p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <NuxtLink to="/dashboard/customers" class="block text-center py-2 text-[10px] font-black text-indigo-600 uppercase hover:underline">จัดการสมาชิกทั้งหมด</NuxtLink>
          </div>
       </div>
     </div>

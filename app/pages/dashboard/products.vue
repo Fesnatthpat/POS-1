@@ -52,8 +52,9 @@ const filteredProducts = computed(() => {
 const handleImageUpload = (event: any) => {
   const file = event.target.files[0]
   if (file) {
-    if (file.size > 500000) {
-      alert('Image size is too large (Limit: 500KB)')
+    // Increase limit to 10MB (10,000,000 bytes)
+    if (file.size > 10000000) {
+      alert('รูปภาพมีขนาดใหญ่เกินไป (จำกัดไม่เกิน 10MB)')
       return
     }
     const reader = new FileReader()

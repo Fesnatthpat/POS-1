@@ -82,8 +82,9 @@ const changeDue = computed(() => {
 const handleSlipUpload = (event: any) => {
   const file = event.target.files[ 0 ]
   if (file) {
-    if (file.size > 1000000) {
-      alert('ไฟล์มีขนาดใหญ่เกินไป (จำกัด 1MB)')
+    // Increase limit to 20MB (20,000,000 bytes)
+    if (file.size > 20000000) {
+      alert('ไฟล์มีขนาดใหญ่เกินไป (จำกัดไม่เกิน 20MB)')
       return
     }
     const reader = new FileReader()
@@ -232,7 +233,17 @@ const completeCheckout = () => {
 
   // Award points
   if (selectedCustomerId.value) {
-    addPoints(selectedCustomerId.value, cartTotal.value)
+    let points = 0
+    if (settings.value.loyaltyPointType === 'amount') {
+      points = Math.floor(cartTotal.value / (settings.value.loyaltyPointRate || 20))
+    } else {
+      const totalItems = cart.value.reduce((sum, item) => sum + item.quantity, 0)
+      points = totalItems * (settings.value.loyaltyPointRate || 1)
+    }
+    
+    if (points > 0) {
+      addPoints(selectedCustomerId.value, points, settings.value.loyaltyPointThreshold)
+    }
   }
 
   lastOrder.value = order

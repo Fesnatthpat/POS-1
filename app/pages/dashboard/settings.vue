@@ -126,6 +126,64 @@ const handleSave = async () => {
           </div>
         </div>
       </div>
+
+      <!-- Loyalty Settings -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8 border-t border-slate-100 pt-8 lg:pt-12">
+        <div class="md:col-span-1">
+          <h3 class="text-lg font-bold text-slate-900 mb-1 lg:mb-2">ระบบสะสมแต้ม</h3>
+          <p class="text-xs lg:text-sm text-slate-500">ตั้งค่าเกณฑ์การคำนวณคะแนนสำหรับสมาชิก</p>
+        </div>
+
+        <div class="md:col-span-2 space-y-4 lg:space-y-6">
+          <div class="bg-white p-6 lg:p-8 rounded-[1.5rem] lg:rounded-[2rem] border border-slate-100 shadow-sm space-y-6">
+            <div>
+              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">เกณฑ์การให้คะแนน</label>
+              <div class="grid grid-cols-2 gap-4">
+                <button @click="form.loyaltyPointType = 'amount'"
+                  class="flex flex-col items-center justify-center p-6 rounded-3xl border-2 transition-all"
+                  :class="[ form.loyaltyPointType === 'amount' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 hover:bg-slate-50' ]">
+                  <span class="text-2xl mb-2">💰</span>
+                  <span class="font-black text-[10px] uppercase tracking-widest">ตามยอดซื้อ</span>
+                </button>
+                <button @click="form.loyaltyPointType = 'item'"
+                  class="flex flex-col items-center justify-center p-6 rounded-3xl border-2 transition-all"
+                  :class="[ form.loyaltyPointType === 'item' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 hover:bg-slate-50' ]">
+                  <span class="text-2xl mb-2">📦</span>
+                  <span class="font-black text-[10px] uppercase tracking-widest">ตามจำนวนชิ้น</span>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                {{ form.loyaltyPointType === 'amount' ? 'ยอดซื้อทุกๆ (฿)' : 'คะแนนต่อสินค้า 1 ชิ้น' }}
+              </label>
+              <div class="flex items-center gap-4">
+                <input type="number" v-model="form.loyaltyPointRate" 
+                  class="flex-1 px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm font-black" />
+                <span class="font-bold text-slate-500 text-sm">
+                  {{ form.loyaltyPointType === 'amount' ? 'ได้รับ 1 แต้ม' : 'แต้ม' }}
+                </span>
+              </div>
+              <p class="mt-2 text-[10px] text-slate-400 font-medium italic">
+                * เช่น {{ form.loyaltyPointType === 'amount' ? 'ซื้อครบ ' + form.loyaltyPointRate + ' บาท รับ 1 แต้ม' : 'ซื้อ 1 ชิ้น รับ ' + form.loyaltyPointRate + ' แต้ม' }}
+              </p>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100">
+              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">เป้าหมายแต้มสะสม (สีเขียว)</label>
+              <div class="flex items-center gap-4">
+                <input type="number" v-model="form.loyaltyPointThreshold" 
+                  class="flex-1 px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm font-black text-emerald-600" />
+                <span class="font-bold text-slate-500 text-sm">แต้ม</span>
+              </div>
+              <p class="mt-2 text-[10px] text-slate-400 font-medium italic">
+                * เมื่อลูกค้ามีแต้มถึงเกณฑ์นี้ ตัวเลขแต้มจะแสดงเป็นสีเขียว
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Save Bar -->

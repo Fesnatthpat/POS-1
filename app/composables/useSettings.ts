@@ -9,6 +9,9 @@ export interface StoreSettings {
   includeTax: boolean
   currency: string
   receiptNote: string
+  loyaltyPointType: 'amount' | 'item'
+  loyaltyPointRate: number
+  loyaltyPointThreshold: number
 }
 
 export const useSettings = () => {
@@ -20,7 +23,10 @@ export const useSettings = () => {
     taxRate: 7,
     includeTax: true,
     currency: 'THB',
-    receiptNote: 'ขอบคุณที่ใช้บริการ!'
+    receiptNote: 'ขอบคุณที่ใช้บริการ!',
+    loyaltyPointType: 'amount',
+    loyaltyPointRate: 20,
+    loyaltyPointThreshold: 10
   })
 
   const loadSettings = () => {
