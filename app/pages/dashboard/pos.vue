@@ -12,12 +12,12 @@ const { settings } = useSettings()
 const { features } = useFeatures()
 
 definePageMeta({
-  layout: 'dashboard',
-  middleware: ['feature-gate']
+    layout: 'dashboard',
+      middleware: ['feature-gate']
 })
 
 useHead({
-  title: 'ระบบขายหน้าร้าน (POS)'
+    title: 'ระบบขายหน้าร้าน (POS)'
 })
 
 // --- State ---
@@ -48,222 +48,281 @@ const lastOrder = ref<any>(null)
 
 // --- Computed ---
 const filteredProducts = computed(() => {
-  return products.value.filter(p =>
-    p.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    p.category.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    p.barcode?.includes(searchQuery.value) ||
-    p.sku?.toLowerCase().includes(searchQuery.value.toLowerCase())
-  )
+    return products.value.filter(p =>
+        p.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            p.category.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                p.barcode?.includes(searchQuery.value) ||
+                    p.sku?.toLowerCase().includes(searchQuery.value.toLowerCase())
+                      )
 })
 
 const subtotal = computed(() => {
-  return cart.value.reduce((total, item) => total + (item.price * item.quantity), 0)
+    return cart.value.reduce((total, item) => total + (item.price * item.quantity), 0)
 })
 
 const discountAmount = computed(() => {
-  if (discountType.value === 'percent') {
-    return (subtotal.value * discountValue.value) / 100
-  }
-  return discountValue.value
+    if (discountType.value === 'percent') {
+          return (subtotal.value * discountValue.value) / 100
+    }
+      return discountValue.value
 })
 
 const cartTotal = computed(() => {
-  return Math.max(0, subtotal.value - discountAmount.value)
+    return Math.max(0, subtotal.value - discountAmount.value)
 })
 
 const changeDue = computed(() => {
-  if (paymentMethod.value === 'cash' && amountReceived.value !== null) {
-    return Math.max(0, amountReceived.value - cartTotal.value)
-  }
-  return 0
+    if (paymentMethod.value === 'cash' && amountReceived.value !== null) {
+          return Math.max(0, amountReceived.value - cartTotal.value)
+    }
+      return 0
 })
 
 // --- Actions ---
 const handleSlipUpload = (event: any) => {
-  const file = event.target.files[ 0 ]
-  if (file) {
-    // Increase limit to 20MB (20,000,000 bytes)
-    if (file.size > 20000000) {
-      alert('ไฟล์มีขนาดใหญ่เกินไป (จำกัดไม่เกิน 20MB)')
-      return
-    }
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      paymentSlip.value = e.target?.result as string
-    }
-    reader.readAsDataURL(file)
-  }
+    const file = event.target.files[ 0 ]
+      if (file) {
+            // จำกัด 20MB
+                if (file.size > 20000000) {
+                        alert('ไฟล์มีขนาดใหญ่เกินไป (จำกัดไม่เกิน 20MB)')
+                              return
+                }
+                    const reader = new FileReader()
+                        reader.onload = (e) => {
+                                paymentSlip.value = e.target?.result as string
+                        }
+                            reader.readAsDataURL(file)
+      }
 }
 
 const handleBarcodeScan = () => {
-  const product = products.value.find(p => p.barcode === barcodeInput.value)
-  if (product) {
-    if (product.stock > 0) {
-      addToCart(product, 1)
-      barcodeInput.value = ''
-    } else {
-      alert('สินค้าหมด!')
-    }
-  }
+    const product = products.value.find(p => p.barcode === barcodeInput.value)
+      if (product) {
+            if (product.stock > 0) {
+                    addToCart(product, 1)
+                          barcodeInput.value = ''
+            } else {
+                    alert('สินค้าหมด!')
+            }
+      }
 }
 
 const openProductModal = (product: any) => {
-  if (product.stock <= 0) {
-    alert('สินค้าหมด!')
-    return
-  }
-  selectedProduct.value = product
-  selectedQuantity.value = 1
-  isProductModalOpen.value = true
+    if (product.stock <= 0) {
+          alert('สินค้าหมด!')
+              return
+    }
+      selectedProduct.value = product
+        selectedQuantity.value = 1
+          isProductModalOpen.value = true
 }
 
 const addToCart = (product: any, quantity: number) => {
-  const existingItem = cart.value.find(item => item.id === product.id)
-  if (existingItem) {
-    const totalQty = existingItem.quantity + quantity
-    if (totalQty <= product.stock) {
-      existingItem.quantity = totalQty
-    } else {
-      alert(`มีสินค้าในคลังเหลือเพียง ${product.stock} ชิ้น`)
-    }
-  } else {
-    cart.value.push({
-      ...product,
-      quantity,
-      cost: product.cost || 0
-    })
-  }
+    const existingItem = cart.value.find(item => item.id === product.id)
+      if (existingItem) {
+            const totalQty = existingItem.quantity + quantity
+                if (totalQty <= product.stock) {
+                        existingItem.quantity = totalQty
+                } else {
+                        alert(`มีสินค้าในคลังเหลือเพียง ${product.stock} ชิ้น`)
+                }
+      } else {
+            cart.value.push({
+                    ...product,
+                          quantity,
+                                cost: product.cost || 0
+            })
+      }
 }
 
 const confirmAddToCart = () => {
-  if (!selectedProduct.value) return
-  addToCart(selectedProduct.value, selectedQuantity.value)
-  isProductModalOpen.value = false
+    if (!selectedProduct.value) return
+      addToCart(selectedProduct.value, selectedQuantity.value)
+        isProductModalOpen.value = false
 }
 
 const updateQuantity = (productId: number, delta: number) => {
-  const item = cart.value.find(i => i.id === productId)
-  const product = products.value.find(p => p.id === productId)
-  if (item && product) {
-    const newQty = item.quantity + delta
-    if (newQty > 0 && newQty <= product.stock) {
-      item.quantity = newQty
-    }
-  }
+    const item = cart.value.find(i => i.id === productId)
+      const product = products.value.find(p => p.id === productId)
+        if (item && product) {
+              const newQty = item.quantity + delta
+                  if (newQty > 0 && newQty <= product.stock) {
+                          item.quantity = newQty
+                  }
+        }
 }
 
 const removeFromCart = (productId: number) => {
-  cart.value = cart.value.filter(item => item.id !== productId)
+    cart.value = cart.value.filter(item => item.id !== productId)
 }
 
 const clearCart = () => {
-  if (confirm('ต้องการล้างรายการปัจจุบันใช่หรือไม่?')) {
-    cart.value = []
-    discountValue.value = 0
-  }
+    if (confirm('ต้องการล้างรายการปัจจุบันใช่หรือไม่?')) {
+          cart.value = []
+              discountValue.value = 0
+    }
 }
 
 const handleHoldBill = () => {
-  if (cart.value.length === 0) return
-  const note = prompt('ระบุหมายเหตุสำหรับบิลนี้:') || ''
-  holdBill(cart.value, note)
-  cart.value = []
-  discountValue.value = 0
+    if (cart.value.length === 0) return
+      const note = prompt('ระบุหมายเหตุสำหรับบิลนี้:') || ''
+        holdBill(cart.value, note)
+          cart.value = []
+            discountValue.value = 0
 }
 
 const handleResumeBill = (id: number) => {
-  const bill = resumeBill(id)
-  if (bill) {
-    cart.value = bill.items
-    isHeldBillsModalOpen.value = false
-    isCartOpenMobile.value = true
-  }
+    const bill = resumeBill(id)
+      if (bill) {
+            cart.value = bill.items
+                isHeldBillsModalOpen.value = false
+                    isCartOpenMobile.value = true
+      }
 }
 
 const openCheckout = () => {
-  if (cart.value.length === 0) return
-  amountReceived.value = paymentMethod.value === 'cash' ? null : cartTotal.value
-  paymentSlip.value = null
-  notes.value = ''
-  selectedCustomerId.value = null
-  isCheckoutModalOpen.value = true
+    if (cart.value.length === 0) return
+      amountReceived.value = paymentMethod.value === 'cash' ? null : cartTotal.value
+        paymentSlip.value = null
+          notes.value = ''
+            selectedCustomerId.value = null
+              isCheckoutModalOpen.value = true
 }
 
+// ฟังก์ชัน Checkout ที่แก้ไขดัก Error แล้ว
 const completeCheckout = () => {
-  if (paymentMethod.value === 'cash' && (amountReceived.value || 0) < cartTotal.value) {
-    alert('จำนวนเงินที่ได้รับน้อยกว่ายอดรวม!')
-    return
-  }
-
-  if ((paymentMethod.value === 'qr' || paymentMethod.value === 'transfer') && !paymentSlip.value) {
-    alert('กรุณาถ่ายภาพหรืออัปโหลดสลิปการชำระเงิน!')
-    return
-  }
-
-  const totalCost = cart.value.reduce((sum, item) => sum + (item.cost * item.quantity), 0)
-
-  // Create Order
-  const orderData = {
-    items: cart.value.map(item => ({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      cost: item.cost,
-      quantity: item.quantity
-    })),
-    subtotal: subtotal.value,
-    discount: discountAmount.value,
-    total: cartTotal.value,
-    totalCost: totalCost,
-    profit: cartTotal.value - totalCost,
-    paymentMethod: paymentMethod.value,
-    customerId: selectedCustomerId.value || undefined,
-    receivedAmount: amountReceived.value || undefined,
-    changeDue: changeDue.value,
-    notes: notes.value,
-    paymentSlip: paymentSlip.value || undefined
-  }
-
-  const order = addOrder(orderData)
-
-  // Deduct Stock
-  cart.value.forEach(item => {
-    deductStock(item.id, item.quantity)
-  })
-
-  // Award points
-  if (selectedCustomerId.value) {
-    let points = 0
-    if (settings.value.loyaltyPointType === 'amount') {
-      points = Math.floor(cartTotal.value / (settings.value.loyaltyPointRate || 20))
-    } else {
-      const totalItems = cart.value.reduce((sum, item) => sum + item.quantity, 0)
-      points = totalItems * (settings.value.loyaltyPointRate || 1)
+    if (paymentMethod.value === 'cash' && (amountReceived.value || 0) < cartTotal.value) {
+          alert('จำนวนเงินที่ได้รับน้อยกว่ายอดรวม!')
+              return
     }
-    
-    if (points > 0) {
-      addPoints(selectedCustomerId.value, points, settings.value.loyaltyPointThreshold)
-    }
-  }
 
-  lastOrder.value = order
-  isCheckoutModalOpen.value = false
-  isReceiptModalOpen.value = true
-  cart.value = []
-  discountValue.value = 0
-  isCartOpenMobile.value = false
+      if ((paymentMethod.value === 'qr' || paymentMethod.value === 'transfer') && !paymentSlip.value) {
+            alert('กรุณาถ่ายภาพหรืออัปโหลดสลิปการชำระเงิน!')
+                return
+      }
+
+        try {
+              const totalCost = cart.value.reduce((sum, item) => sum + (item.cost * item.quantity), 0)
+
+                  // Create Order - ใส่ข้อมูลครบถ้วนเหมือนเดิม
+                      const orderData = {
+                              items: cart.value.map(item => ({
+                                        id: item.id,
+                                                name: item.name,
+                                                        price: item.price,
+                                                                cost: item.cost,
+                                                                        quantity: item.quantity
+                              })),
+                                    subtotal: subtotal.value,
+                                          discount: discountAmount.value,
+                                                total: cartTotal.value,
+                                                      totalCost: totalCost,
+                                                            profit: cartTotal.value - totalCost,
+                                                                  paymentMethod: paymentMethod.value,
+                                                                        customerId: selectedCustomerId.value || undefined,
+                                                                              receivedAmount: amountReceived.value || undefined,
+                                                                                    changeDue: changeDue.value,
+                                                                                          notes: notes.value,
+                                                                                                paymentSlip: paymentSlip.value || undefined
+                      }
+
+                          const order = addOrder(orderData)
+
+                              // Deduct Stock
+                                  cart.value.forEach(item => {
+                                          deductStock(item.id, item.quantity)
+                                  })
+
+                                      // Award points
+                                          if (selectedCustomerId.value) {
+                                                  let points = 0
+                                                        if (settings.value.loyaltyPointType === 'amount') {
+                                                                  points = Math.floor(cartTotal.value / (settings.value.loyaltyPointRate || 20))
+                                                        } else {
+                                                                  const totalItems = cart.value.reduce((sum, item) => sum + item.quantity, 0)
+                                                                          points = totalItems * (settings.value.loyaltyPointRate || 1)
+                                                        }
+                                                              
+                                                                    if (points > 0) {
+                                                                              addPoints(selectedCustomerId.value, points, settings.value.loyaltyPointThreshold)
+                                                                    }
+                                          }
+
+                                              lastOrder.value = order
+                                                  isCheckoutModalOpen.value = false
+                                                      isReceiptModalOpen.value = true
+                                                          cart.value = []
+                                                              discountValue.value = 0
+                                                                  isCartOpenMobile.value = false
+
+        } catch (error: any) {
+              // ให้มันฟ้องออกมาว่าพังที่บรรทัดไหน!
+                  console.error("Checkout Error: ", error)
+                      alert('เกิดข้อผิดพลาดระหว่างชำระเงิน: ' + (error.message || error))
+        }
 }
 
 const envName = computed(() => process.env.NODE_ENV || 'development')
 
 const formatCurrency = (val: number) => {
-  return new Intl.NumberFormat('th-TH', { style: 'currency', currency: settings.value.currency || 'THB' }).format(val)
+    return new Intl.NumberFormat('th-TH', { style: 'currency', currency: settings.value.currency || 'THB' }).format(val)
 }
 
 const formatDate = (dateStr: string) => {
-  return new Date(dateStr).toLocaleString('th-TH')
+    return new Date(dateStr).toLocaleString('th-TH')
 }
 </script>
+
+}
+}
+        }
+                                                                    }
+                                                        }
+                                                        }
+                                          }
+                                  })
+                              }))
+                      }
+        }
+      }
+    }
+}
+}
+      }
+}
+}
+    }
+}
+}
+                  }
+        }
+}
+}
+            })
+      }
+                }
+                }
+      }
+}
+    }
+}
+            }
+            }
+      }
+}
+                        }
+                }
+      }
+}
+    }
+})
+})
+    }
+})
+})
+})
+})
+})
 
 <template>
   <div class="h-full flex -m-4 sm:-m-6 lg:-m-8 overflow-hidden bg-slate-50">
