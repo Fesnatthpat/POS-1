@@ -92,12 +92,12 @@ const hourlyTrend = computed(() => {
   <div class="p-4 sm:p-6 lg:p-8">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 lg:gap-6 mb-8 lg:mb-10">
       <div>
-        <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">Sales Reports</h1>
-        <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">Track your business performance.</p>
+        <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">รายงานการขาย</h1>
+        <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">ติดตามผลการดำเนินงานของธุรกิจคุณ</p>
       </div>
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <div class="flex items-center gap-3 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
-          <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Date:</span>
+          <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">วันที่:</span>
           <input type="date" v-model="selectedDate" 
             class="bg-slate-50 border-none rounded-xl px-3 py-2 font-bold text-slate-900 focus:ring-0 text-sm flex-1 md:flex-none" />
         </div>
@@ -105,7 +105,7 @@ const hourlyTrend = computed(() => {
            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
            </svg>
-           <span>Export CSV</span>
+           <span>ส่งออก CSV</span>
         </button>
       </div>
     </div>
@@ -114,25 +114,25 @@ const hourlyTrend = computed(() => {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8 lg:mb-10">
       <div class="bg-indigo-600 p-6 lg:p-8 rounded-3xl lg:rounded-[2rem] text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
         <div class="relative z-10">
-          <p class="text-[10px] lg:text-xs font-bold opacity-70 uppercase tracking-widest mb-1">Revenue</p>
+          <p class="text-[10px] lg:text-xs font-bold opacity-70 uppercase tracking-widest mb-1">รายได้รวม</p>
           <p class="text-2xl lg:text-3xl font-black truncate">{{ formatCurrency(dailyStats.revenue) }}</p>
         </div>
       </div>
 
       <div class="bg-white p-6 lg:p-8 rounded-3xl lg:rounded-[2rem] border border-slate-100 shadow-sm">
-        <p class="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Cost</p>
+        <p class="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">ต้นทุนรวม</p>
         <p class="text-2xl lg:text-3xl font-black text-slate-900">{{ formatCurrency(profitStats.totalCost) }}</p>
       </div>
 
       <div class="bg-white p-6 lg:p-8 rounded-3xl lg:rounded-[2rem] border border-slate-100 shadow-sm">
-        <p class="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Gross Profit</p>
+        <p class="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">กำไรขั้นต้น</p>
         <p class="text-2xl lg:text-3xl font-black" :class="profitStats.totalProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'">
            {{ formatCurrency(profitStats.totalProfit) }}
         </p>
       </div>
 
       <div class="bg-slate-900 p-6 lg:p-8 rounded-3xl lg:rounded-[2rem] text-white shadow-xl">
-        <p class="text-[10px] lg:text-xs font-bold opacity-50 uppercase tracking-widest mb-1">Margin</p>
+        <p class="text-[10px] lg:text-xs font-bold opacity-50 uppercase tracking-widest mb-1">อัตรากำไร</p>
         <p class="text-2xl lg:text-3xl font-black text-indigo-400">{{ profitStats.margin.toFixed(1) }}%</p>
       </div>
     </div>
@@ -142,8 +142,8 @@ const hourlyTrend = computed(() => {
        <div class="bg-white p-6 lg:p-10 rounded-3xl lg:rounded-[2.5rem] border border-slate-100 shadow-sm">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
              <div>
-                <h3 class="text-xl font-black text-slate-900">Hourly Sales Trend</h3>
-                <p class="text-xs text-slate-500 font-medium">Revenue distribution across operating hours.</p>
+                <h3 class="text-xl font-black text-slate-900">แนวโน้มการขายรายชั่วโมง</h3>
+                <p class="text-xs text-slate-500 font-medium">การกระจายรายได้ตามช่วงเวลาที่เปิดทำการ</p>
              </div>
           </div>
           
@@ -165,8 +165,8 @@ const hourlyTrend = computed(() => {
       <!-- Recent Orders -->
       <div class="lg:col-span-2 space-y-4 lg:space-y-6">
         <div class="flex items-center justify-between px-2 lg:px-0">
-           <h2 class="text-xl font-black text-slate-900">Transactions</h2>
-           <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ dailyStats.orders.length }} Items</span>
+           <h2 class="text-xl font-black text-slate-900">รายการธุรกรรม</h2>
+           <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ dailyStats.orders.length }} รายการ</span>
         </div>
         
         <div class="bg-white rounded-[1.5rem] lg:rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
@@ -174,14 +174,14 @@ const hourlyTrend = computed(() => {
             <table class="w-full text-left min-w-[600px] lg:min-w-0">
               <thead>
                 <tr class="bg-slate-50/50 border-b border-slate-100">
-                  <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Time / ID</th>
-                  <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Items</th>
-                  <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Total</th>
+                  <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">เวลา / รหัสอ้างอิง</th>
+                  <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">จำนวนสินค้า</th>
+                  <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">ยอดรวม</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-50">
                 <tr v-if="dailyStats.orders.length === 0">
-                  <td colspan="3" class="px-6 lg:px-8 py-10 text-center text-slate-400 font-bold">No transactions for this date.</td>
+                  <td colspan="3" class="px-6 lg:px-8 py-10 text-center text-slate-400 font-bold">ไม่พบรายการธุรกรรมในวันที่เลือก</td>
                 </tr>
                 <tr v-for="order in dailyStats.orders.slice().reverse()" :key="order.id" class="hover:bg-slate-50/50 transition-colors">
                   <td class="px-6 lg:px-8 py-4 lg:py-5">
@@ -191,8 +191,8 @@ const hourlyTrend = computed(() => {
                     </div>
                   </td>
                   <td class="px-6 lg:px-8 py-4 lg:py-5">
-                    <span class="text-xs lg:text-sm font-medium text-slate-600">{{ order.items.length }} items</span>
-                    <span class="ml-2 px-1.5 py-0.5 bg-slate-100 rounded text-[8px] font-black uppercase text-slate-500">{{ order.paymentMethod }}</span>
+                    <span class="text-xs lg:text-sm font-medium text-slate-600">{{ order.items.length }} รายการ</span>
+                    <span class="ml-2 px-1.5 py-0.5 bg-slate-100 rounded text-[8px] font-black uppercase text-slate-500">{{ order.paymentMethod === 'cash' ? 'เงินสด' : order.paymentMethod === 'qr' ? 'คิวอาร์' : 'โอนเงิน' }}</span>
                   </td>
                   <td class="px-6 lg:px-8 py-4 lg:py-5 text-right font-black text-slate-900 text-xs lg:text-sm">
                     {{ formatCurrency(order.total) }}
@@ -206,16 +206,16 @@ const hourlyTrend = computed(() => {
 
       <!-- Best Sellers -->
       <div class="space-y-4 lg:space-y-6">
-        <h2 class="text-xl font-black text-slate-900 px-2 lg:px-0">Top Products</h2>
+        <h2 class="text-xl font-black text-slate-900 px-2 lg:px-0">สินค้าขายดี</h2>
         <div class="bg-white p-6 lg:p-8 rounded-[1.5rem] lg:rounded-[2rem] border border-slate-100 shadow-sm space-y-4 lg:space-y-6">
-          <div v-if="bestSellers.length === 0" class="text-center py-10 text-slate-400 font-bold">No data yet.</div>
+          <div v-if="bestSellers.length === 0" class="text-center py-10 text-slate-400 font-bold">ยังไม่มีข้อมูล</div>
           <div v-for="(item, index) in bestSellers" :key="index" class="flex items-center gap-3 lg:gap-4">
             <div class="w-8 h-8 lg:w-10 lg:h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center font-black text-xs lg:text-sm flex-shrink-0">
               {{ index + 1 }}
             </div>
             <div class="flex-1 min-w-0">
               <p class="font-bold text-slate-900 text-xs lg:text-sm truncate">{{ item.name }}</p>
-              <p class="text-[9px] lg:text-[10px] text-slate-400 font-bold uppercase truncate">{{ item.quantity }} units sold</p>
+              <p class="text-[9px] lg:text-[10px] text-slate-400 font-bold uppercase truncate">ขายแล้ว {{ item.quantity }} ชิ้น</p>
             </div>
             <div class="text-right flex-shrink-0">
                <p class="font-black text-slate-900 text-xs lg:text-sm">{{ formatCurrency(item.revenue) }}</p>

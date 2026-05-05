@@ -13,27 +13,27 @@
             </div>
             <span class="text-2xl font-extrabold tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">POS.</span>
           </NuxtLink>
-          <h2 class="text-3xl font-black text-slate-900 tracking-tight">Create Account</h2>
-          <p class="mt-3 text-slate-500 font-medium">Join us to start managing your business.</p>
+          <h2 class="text-3xl font-black text-slate-900 tracking-tight">สร้างบัญชี</h2>
+          <p class="mt-3 text-slate-500 font-medium">เข้าร่วมกับเราเพื่อเริ่มจัดการธุรกิจของคุณ</p>
         </div>
 
         <form class="space-y-5" @submit.prevent="handleRegister">
           <div>
-            <label for="name" class="block text-sm font-bold text-slate-700 mb-2">Full Name</label>
+            <label for="name" class="block text-sm font-bold text-slate-700 mb-2">ชื่อ-นามสกุล</label>
             <input id="name" type="text" required
               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-slate-400"
-              placeholder="John Doe" v-model="name" />
+              placeholder="สมชาย ใจดี" v-model="name" />
           </div>
 
           <div>
-            <label for="email" class="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
+            <label for="email" class="block text-sm font-bold text-slate-700 mb-2">ที่อยู่อีเมล</label>
             <input id="email" type="email" required
               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-slate-400"
               placeholder="name@company.com" v-model="email" />
           </div>
 
           <div>
-            <label for="password" class="block text-sm font-bold text-slate-700 mb-2">Password</label>
+            <label for="password" class="block text-sm font-bold text-slate-700 mb-2">รหัสผ่าน</label>
             <input id="password" type="password" required
               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-slate-400"
               placeholder="••••••••" v-model="password" />
@@ -42,15 +42,15 @@
           <div class="pt-2">
             <button type="submit"
               class="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-0.5 active:translate-y-0 transition-all">
-              Create My Account
+              สร้างบัญชีของฉัน
             </button>
           </div>
         </form>
 
         <p class="mt-10 text-center text-sm font-medium text-slate-500">
-          Already have an account?
+          มีบัญชีอยู่แล้วใช่ไหม?
           <NuxtLink to="/login" class="text-indigo-600 font-bold hover:text-indigo-700 underline underline-offset-4">
-            Sign in instead
+            เข้าสู่ระบบแทน
           </NuxtLink>
         </p>
       </div>

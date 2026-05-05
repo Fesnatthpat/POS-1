@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   css: ['./app/assets/css/main.css'],
   app: {
     head: {
-      title: 'Vendora',
+      title: 'Vendora - ระบบจัดการร้านค้า',
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },

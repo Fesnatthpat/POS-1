@@ -25,9 +25,9 @@ const filteredOrders = computed(() => {
 })
 
 const getCustomerName = (id?: number) => {
-  if (!id) return 'Walking Customer'
+  if (!id) return 'ลูกค้าทั่วไป'
   const customer = customers.value.find(c => c.id === id)
-  return customer ? customer.name : 'Unknown'
+  return customer ? customer.name : 'ไม่ทราบชื่อ'
 }
 
 const formatCurrency = (val: number) => {
@@ -52,8 +52,8 @@ const viewReceipt = (order: any) => {
   <div class="p-4 sm:p-6 lg:p-8">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 lg:gap-6 mb-8 lg:mb-10">
       <div>
-        <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">Order History</h1>
-        <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">Review and manage all past transactions.</p>
+        <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">ประวัติคำสั่งซื้อ</h1>
+        <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">ดูและจัดการรายการย้อนหลังทั้งหมด</p>
       </div>
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <div class="relative">
@@ -62,11 +62,11 @@ const viewReceipt = (order: any) => {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </span>
-          <input type="text" v-model="searchQuery" placeholder="Search order ID..." 
+          <input type="text" v-model="searchQuery" placeholder="ค้นหารหัสคำสั่งซื้อ..." 
             class="pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 w-full sm:w-64 transition-all" />
         </div>
         <NuxtLink to="/dashboard/pos" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2">
-           <span>New Order</span>
+           <span>สร้างคำสั่งซื้อใหม่</span>
         </NuxtLink>
       </div>
     </div>
@@ -76,17 +76,17 @@ const viewReceipt = (order: any) => {
         <table class="w-full text-left border-collapse min-w-[800px] lg:min-w-0">
           <thead>
             <tr class="bg-slate-50/50 border-b border-slate-100">
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Order ID</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Customer</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Date & Time</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Payment</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Total</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">รหัสคำสั่งซื้อ</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">ลูกค้า</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">วันที่และเวลา</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">การชำระเงิน</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">ยอดรวม</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">การดำเนินการ</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-50">
             <tr v-if="filteredOrders.length === 0">
-               <td colspan="6" class="px-8 py-10 text-center text-slate-400 font-bold">No orders found.</td>
+               <td colspan="6" class="px-8 py-10 text-center text-slate-400 font-bold">ไม่พบรายการคำสั่งซื้อ</td>
             </tr>
             <tr v-for="order in filteredOrders" :key="order.id" class="hover:bg-slate-50/50 transition-colors group">
               <td class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-indigo-600 text-xs lg:text-sm">{{ order.id }}</td>
@@ -101,7 +101,7 @@ const viewReceipt = (order: any) => {
               <td class="px-6 lg:px-8 py-4 lg:py-5 text-xs lg:text-sm text-slate-600 font-medium">{{ formatDate(order.timestamp) }}</td>
               <td class="px-6 lg:px-8 py-4 lg:py-5">
                 <span class="px-2 lg:px-3 py-1 bg-slate-100 rounded-full text-[9px] lg:text-[10px] font-black uppercase text-slate-600 whitespace-nowrap">
-                  {{ order.paymentMethod }}
+                  {{ order.paymentMethod === 'cash' ? 'เงินสด' : order.paymentMethod === 'qr' ? 'คิวอาร์โค้ด' : 'โอนเงิน' }}
                 </span>
               </td>
               <td class="px-6 lg:px-8 py-4 lg:py-5 text-xs lg:text-sm text-slate-900 font-black">{{ formatCurrency(order.total) }}</td>
@@ -124,8 +124,8 @@ const viewReceipt = (order: any) => {
       <div class="bg-white rounded-[2rem] lg:rounded-[32px] shadow-2xl w-full max-w-sm overflow-hidden flex flex-col max-h-[95vh]">
         <div class="p-6 lg:p-8 text-center border-b border-dashed border-slate-200 flex-shrink-0">
            <div class="w-14 h-14 lg:w-16 lg:h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl lg:text-2xl">📋</div>
-           <h3 class="text-xl lg:text-2xl font-black text-slate-900">Order Receipt</h3>
-           <p class="text-slate-400 font-bold uppercase tracking-widest text-[9px] lg:text-[10px] mt-1">Transaction History</p>
+           <h3 class="text-xl lg:text-2xl font-black text-slate-900">ใบเสร็จรับเงิน</h3>
+           <p class="text-slate-400 font-bold uppercase tracking-widest text-[9px] lg:text-[10px] mt-1">ประวัติการทำรายการ</p>
         </div>
         
         <div class="flex-1 overflow-y-auto p-6 lg:p-8 bg-slate-50/50">
@@ -133,18 +133,18 @@ const viewReceipt = (order: any) => {
             <div class="text-center font-bold mb-4">
                <p class="text-base lg:text-lg">{{ settings.name }}</p>
                <p>{{ settings.address }}</p>
-               <p>Tel: {{ settings.phone }}</p>
+               <p>โทร: {{ settings.phone }}</p>
             </div>
             <div class="flex justify-between">
-              <span>Receipt:</span>
+              <span>เลขที่ใบเสร็จ:</span>
               <span class="font-bold">{{ selectedOrder?.id }}</span>
             </div>
             <div class="flex justify-between">
-              <span>Date:</span>
+              <span>วันที่:</span>
               <span>{{ formatDate(selectedOrder?.timestamp) }}</span>
             </div>
             <div class="flex justify-between">
-              <span>Customer:</span>
+              <span>ลูกค้า:</span>
               <span class="truncate ml-4">{{ getCustomerName(selectedOrder?.customerId) }}</span>
             </div>
             <div class="py-3 lg:py-4 border-y border-dashed border-slate-300">
@@ -154,37 +154,37 @@ const viewReceipt = (order: any) => {
               </div>
             </div>
             <div class="flex justify-between">
-              <span>Subtotal:</span>
+              <span>รวมเงิน:</span>
               <span>{{ formatCurrency(selectedOrder?.subtotal) }}</span>
             </div>
             <div v-if="selectedOrder?.discount" class="flex justify-between text-rose-500">
-              <span>Discount:</span>
+              <span>ส่วนลด:</span>
               <span>-{{ formatCurrency(selectedOrder?.discount) }}</span>
             </div>
             <div class="flex justify-between text-base lg:text-lg font-black pt-2 border-t border-slate-200 mt-2">
-              <span>Total:</span>
+              <span>ยอดรวมทั้งสิ้น:</span>
               <span>{{ formatCurrency(selectedOrder?.total) }}</span>
             </div>
             <div class="flex justify-between pt-4 uppercase text-[9px] font-black">
-               <span>Method: {{ selectedOrder?.paymentMethod }}</span>
+               <span>วิธีชำระ: {{ selectedOrder?.paymentMethod === 'cash' ? 'เงินสด' : selectedOrder?.paymentMethod === 'qr' ? 'คิวอาร์โค้ด' : 'โอนเงิน' }}</span>
             </div>
             <div v-if="selectedOrder?.paymentMethod === 'cash'" class="flex justify-between">
-               <span>Paid:</span>
+               <span>รับเงินมา:</span>
                <span>{{ formatCurrency(selectedOrder?.receivedAmount) }}</span>
             </div>
             <div v-if="selectedOrder?.paymentMethod === 'cash'" class="flex justify-between font-bold">
-               <span>Change:</span>
+               <span>เงินทอน:</span>
                <span>{{ formatCurrency(selectedOrder?.changeDue) }}</span>
             </div>
             <div v-if="selectedOrder?.notes" class="mt-3 pt-3 border-t border-dashed border-slate-300 text-[9px] text-slate-500">
-               <p class="font-bold uppercase mb-1">Notes:</p>
+               <p class="font-bold uppercase mb-1">หมายเหตุ:</p>
                <p>{{ selectedOrder.notes }}</p>
             </div>
           </div>
           
           <!-- Payment Slip Evidence -->
           <div v-if="selectedOrder?.paymentSlip" class="mb-6">
-             <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 text-center">Payment Evidence</p>
+             <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 text-center">หลักฐานการชำระเงิน</p>
              <div class="rounded-xl overflow-hidden border border-slate-200 shadow-sm">
                 <img :src="selectedOrder.paymentSlip" class="w-full h-auto" />
              </div>
@@ -196,8 +196,8 @@ const viewReceipt = (order: any) => {
         </div>
 
         <div class="p-6 lg:p-8 grid grid-cols-2 gap-3 lg:gap-4 flex-shrink-0">
-           <button @click="isReceiptModalOpen = false" class="py-3 lg:py-4 bg-slate-100 text-slate-600 rounded-xl lg:rounded-2xl font-black text-sm lg:text-base">Close</button>
-           <button @click="window.print()" class="py-3 lg:py-4 bg-indigo-600 text-white rounded-xl lg:rounded-2xl font-black shadow-lg shadow-indigo-100 text-sm lg:text-base">Print</button>
+           <button @click="isReceiptModalOpen = false" class="py-3 lg:py-4 bg-slate-100 text-slate-600 rounded-xl lg:rounded-2xl font-black text-sm lg:text-base">ปิด</button>
+           <button @click="window.print()" class="py-3 lg:py-4 bg-indigo-600 text-white rounded-xl lg:rounded-2xl font-black shadow-lg shadow-indigo-100 text-sm lg:text-base">พิมพ์</button>
         </div>
       </div>
     </div>

@@ -13,13 +13,13 @@
             </div>
             <span class="text-2xl font-extrabold tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">POS.</span>
           </NuxtLink>
-          <h2 class="text-3xl font-black text-slate-900 tracking-tight">Welcome Back</h2>
-          <p class="mt-3 text-slate-500 font-medium">Please enter your details to sign in.</p>
+          <h2 class="text-3xl font-black text-slate-900 tracking-tight">ยินดีต้อนรับกลับมา</h2>
+          <p class="mt-3 text-slate-500 font-medium">กรุณากรอกข้อมูลของคุณเพื่อเข้าสู่ระบบ</p>
         </div>
 
         <form class="space-y-6" @submit.prevent="handleLogin">
           <div>
-            <label for="email" class="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
+            <label for="email" class="block text-sm font-bold text-slate-700 mb-2">ที่อยู่อีเมล</label>
             <input id="email" type="email" required
               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-slate-400"
               placeholder="name@company.com" v-model="email" />
@@ -27,8 +27,8 @@
 
           <div>
             <div class="flex items-center justify-between mb-2">
-              <label for="password" class="text-sm font-bold text-slate-700">Password</label>
-              <a href="#" class="text-xs font-bold text-indigo-600 hover:text-indigo-700">Forgot Password?</a>
+              <label for="password" class="text-sm font-bold text-slate-700">รหัสผ่าน</label>
+              <a href="#" class="text-xs font-bold text-indigo-600 hover:text-indigo-700">ลืมรหัสผ่าน?</a>
             </div>
             <input id="password" type="password" required
               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-slate-400"
@@ -39,20 +39,20 @@
             <input id="remember" type="checkbox"
               class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500" />
             <label for="remember" class="ml-2 block text-sm font-medium text-slate-600">
-              Keep me signed in for 30 days
+              จดจำการเข้าสู่ระบบเป็นเวลา 30 วัน
             </label>
           </div>
 
           <button type="submit"
             class="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-0.5 active:translate-y-0 transition-all">
-            Sign In
+            เข้าสู่ระบบ
           </button>
         </form>
 
         <p class="mt-10 text-center text-sm font-medium text-slate-500">
-          Don't have an account?
+          ยังไม่มีบัญชีใช่ไหม?
           <NuxtLink to="/register" class="text-indigo-600 font-bold hover:text-indigo-700 underline underline-offset-4">
-            Create an account
+            สร้างบัญชีใหม่
           </NuxtLink>
         </p>
       </div>

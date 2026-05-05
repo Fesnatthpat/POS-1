@@ -14,7 +14,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Point of Sale'
+  title: 'ระบบขายหน้าร้าน (POS)'
 })
 
 // --- State ---
@@ -80,7 +80,7 @@ const handleSlipUpload = (event: any) => {
   const file = event.target.files[ 0 ]
   if (file) {
     if (file.size > 1000000) {
-      alert('File too large (Limit: 1MB)')
+      alert('ไฟล์มีขนาดใหญ่เกินไป (จำกัด 1MB)')
       return
     }
     const reader = new FileReader()
@@ -98,14 +98,14 @@ const handleBarcodeScan = () => {
       addToCart(product, 1)
       barcodeInput.value = ''
     } else {
-      alert('Out of stock!')
+      alert('สินค้าหมด!')
     }
   }
 }
 
 const openProductModal = (product: any) => {
   if (product.stock <= 0) {
-    alert('Out of stock!')
+    alert('สินค้าหมด!')
     return
   }
   selectedProduct.value = product
@@ -120,7 +120,7 @@ const addToCart = (product: any, quantity: number) => {
     if (totalQty <= product.stock) {
       existingItem.quantity = totalQty
     } else {
-      alert(`Only ${product.stock} items available in stock.`)
+      alert(`มีสินค้าในคลังเหลือเพียง ${product.stock} ชิ้น`)
     }
   } else {
     cart.value.push({
@@ -153,7 +153,7 @@ const removeFromCart = (productId: number) => {
 }
 
 const clearCart = () => {
-  if (confirm('Clear current order?')) {
+  if (confirm('ต้องการล้างรายการปัจจุบันใช่หรือไม่?')) {
     cart.value = []
     discountValue.value = 0
   }
@@ -161,7 +161,7 @@ const clearCart = () => {
 
 const handleHoldBill = () => {
   if (cart.value.length === 0) return
-  const note = prompt('Enter a note for this bill:') || ''
+  const note = prompt('ระบุหมายเหตุสำหรับบิลนี้:') || ''
   holdBill(cart.value, note)
   cart.value = []
   discountValue.value = 0
@@ -187,12 +187,12 @@ const openCheckout = () => {
 
 const completeCheckout = () => {
   if (paymentMethod.value === 'cash' && (amountReceived.value || 0) < cartTotal.value) {
-    alert('Received amount is less than total!')
+    alert('จำนวนเงินที่ได้รับน้อยกว่ายอดรวม!')
     return
   }
 
   if ((paymentMethod.value === 'qr' || paymentMethod.value === 'transfer') && !paymentSlip.value) {
-    alert('Please capture/upload payment slip!')
+    alert('กรุณาถ่ายภาพหรืออัปโหลดสลิปการชำระเงิน!')
     return
   }
 
@@ -255,8 +255,8 @@ const formatDate = (dateStr: string) => {
     <div class="flex-1 flex flex-col min-w-0 h-full p-4 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="mb-6 flex justify-between items-end">
         <div>
-          <h1 class="text-3xl font-black text-slate-900 tracking-tight">Point of Sale</h1>
-          <p class="text-slate-500 font-medium text-sm mt-1">Terminal: {{ settings.name }}</p>
+          <h1 class="text-3xl font-black text-slate-900 tracking-tight">ระบบขายหน้าร้าน (POS)</h1>
+          <p class="text-slate-500 font-medium text-sm mt-1">เครื่อง: {{ settings.name }}</p>
         </div>
         <button @click="isHeldBillsModalOpen = true"
           class="px-4 py-2 bg-amber-100 text-amber-700 rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm border border-amber-200/50 hover:bg-amber-200 transition-all">
@@ -264,7 +264,7 @@ const formatDate = (dateStr: string) => {
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
             <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
           </span>
-          Held Bills ({{ heldBills.length }})
+          บิลที่พักไว้ ({{ heldBills.length }})
         </button>
       </div>
 
@@ -278,7 +278,7 @@ const formatDate = (dateStr: string) => {
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </span>
-          <input type="text" v-model="searchQuery" placeholder="Search product name, category..."
+          <input type="text" v-model="searchQuery" placeholder="ค้นหาชื่อสินค้า, หมวดหมู่..."
             class="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all" />
         </div>
         <div class="relative hidden md:block">
@@ -289,7 +289,7 @@ const formatDate = (dateStr: string) => {
                 d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
             </svg>
           </span>
-          <input type="text" v-model="barcodeInput" @keyup.enter="handleBarcodeScan" placeholder="Scan Barcode..."
+          <input type="text" v-model="barcodeInput" @keyup.enter="handleBarcodeScan" placeholder="สแกนบาร์โค้ด..."
             class="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all" />
         </div>
       </div>
@@ -313,7 +313,7 @@ const formatDate = (dateStr: string) => {
             <span class="text-indigo-600 font-black">{{ formatCurrency(product.price) }}</span>
             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full"
               :class="product.stock <= 5 ? 'bg-rose-50 text-rose-500' : 'bg-slate-50 text-slate-400'">
-              {{ product.stock }} left
+              เหลือ {{ product.stock }} ชิ้น
             </span>
           </div>
         </button>
@@ -336,13 +336,12 @@ const formatDate = (dateStr: string) => {
       <!-- Cart Header -->
       <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
         <div>
-          <h2 class="text-xl font-black text-slate-900">Current Order</h2>
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{{ cart.length }} items
-            selected</p>
+          <h2 class="text-xl font-black text-slate-900">รายการสั่งซื้อ</h2>
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">เลือกไว้ {{ cart.length }} รายการ</p>
         </div>
         <div class="flex gap-2">
           <button @click="clearCart" class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
-            title="Clear Order">
+            title="ล้างรายการ">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -362,7 +361,7 @@ const formatDate = (dateStr: string) => {
       <div class="flex-1 overflow-y-auto p-6 space-y-5 custom-scrollbar">
         <div v-if="cart.length === 0" class="h-full flex flex-col items-center justify-center text-center opacity-30">
           <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-3xl">🛒</div>
-          <p class="font-bold text-slate-500 uppercase tracking-widest text-xs">Your cart is empty</p>
+          <p class="font-bold text-slate-500 uppercase tracking-widest text-xs">ตะกร้าสินค้าว่างเปล่า</p>
         </div>
 
         <div v-for="item in cart" :key="item.id"
@@ -398,13 +397,13 @@ const formatDate = (dateStr: string) => {
       <div class="p-6 bg-slate-50 border-t border-slate-100">
         <div class="space-y-3 mb-6">
           <div class="flex justify-between text-xs">
-            <span class="text-slate-500 font-bold uppercase tracking-wider">Subtotal</span>
+            <span class="text-slate-500 font-bold uppercase tracking-wider">รวมเงิน</span>
             <span class="text-slate-900 font-black">{{ formatCurrency(subtotal) }}</span>
           </div>
 
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">Discount</span>
+              <span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">ส่วนลด</span>
               <select v-model="discountType"
                 class="text-[9px] font-black bg-white border border-slate-200 rounded px-1 outline-none">
                 <option value="percent">%</option>
@@ -419,7 +418,7 @@ const formatDate = (dateStr: string) => {
           </div>
 
           <div class="flex justify-between items-center pt-4 border-t border-slate-200">
-            <span class="text-slate-900 font-black text-lg">Total</span>
+            <span class="text-slate-900 font-black text-lg">ยอดสุทธิ</span>
             <span class="text-3xl font-black text-indigo-600">{{ formatCurrency(cartTotal) }}</span>
           </div>
         </div>
@@ -427,11 +426,11 @@ const formatDate = (dateStr: string) => {
         <div class="grid grid-cols-2 gap-4">
           <button @click="handleHoldBill" :disabled="cart.length === 0"
             class="py-4 bg-amber-500 text-white rounded-2xl font-black text-sm shadow-lg shadow-amber-900/10 hover:bg-amber-600 disabled:opacity-50 transition-all">
-            Hold Bill
+            พักบิล
           </button>
           <button @click="openCheckout" :disabled="cart.length === 0"
             class="py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm shadow-lg shadow-indigo-900/20 hover:bg-indigo-700 disabled:opacity-50 transition-all">
-            Checkout
+            ชำระเงิน
           </button>
         </div>
       </div>
@@ -458,7 +457,7 @@ const formatDate = (dateStr: string) => {
       <div
         class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[95vh] animate-in fade-in zoom-in-95 duration-200">
         <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-          <h3 class="text-2xl font-black text-slate-900">Checkout</h3>
+          <h3 class="text-2xl font-black text-slate-900">ชำระเงิน</h3>
           <button @click="isCheckoutModalOpen = false" class="text-slate-400 hover:text-slate-600 transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
@@ -471,49 +470,47 @@ const formatDate = (dateStr: string) => {
           <div
             class="bg-indigo-600 rounded-[2rem] p-8 flex justify-between items-center text-white shadow-xl shadow-indigo-100">
             <div>
-              <p class="text-xs font-bold opacity-70 uppercase tracking-widest mb-1">Grand Total</p>
+              <p class="text-xs font-bold opacity-70 uppercase tracking-widest mb-1">ยอดรวมสุทธิ</p>
               <p class="text-4xl font-black">{{ formatCurrency(cartTotal) }}</p>
             </div>
             <div class="text-right">
-              <p class="text-xs font-bold opacity-70 uppercase tracking-widest mb-1">Total Items</p>
+              <p class="text-xs font-bold opacity-70 uppercase tracking-widest mb-1">จำนวนรายการ</p>
               <p class="text-2xl font-black">{{ cart.length }}</p>
             </div>
           </div>
 
           <div class="space-y-6">
             <div>
-              <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Customer
-                Member</label>
+              <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">สมาชิกลูกค้า</label>
               <select v-model="selectedCustomerId"
                 class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500 appearance-none text-sm transition-all">
-                <option :value="null">Walking Customer (No Points)</option>
+                <option :value="null">ลูกค้าทั่วไป (ไม่สะสมแต้ม)</option>
                 <option v-for="c in customers" :key="c.id" :value="c.id">
-                  {{ c.name }} ({{ c.phone }}) — {{ c.points }} pts
+                  {{ c.name }} ({{ c.phone }}) — {{ c.points }} แต้ม
                 </option>
               </select>
             </div>
 
             <div>
-              <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Payment
-                Method</label>
+              <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-4">วิธีการชำระเงิน</label>
               <div class="grid grid-cols-3 gap-4">
                 <button @click="paymentMethod = 'cash'; amountReceived = null"
                   class="flex flex-col items-center justify-center p-6 rounded-3xl border-2 transition-all"
                   :class="[ paymentMethod === 'cash' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 hover:bg-slate-50' ]">
                   <span class="text-3xl mb-2">💵</span>
-                  <span class="font-black text-xs uppercase tracking-widest">Cash</span>
+                  <span class="font-black text-xs uppercase tracking-widest">เงินสด</span>
                 </button>
                 <button @click="paymentMethod = 'qr'; amountReceived = cartTotal"
                   class="flex flex-col items-center justify-center p-6 rounded-3xl border-2 transition-all"
                   :class="[ paymentMethod === 'qr' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 hover:bg-slate-50' ]">
                   <span class="text-3xl mb-2">🔳</span>
-                  <span class="font-black text-xs uppercase tracking-widest">QR Pay</span>
+                  <span class="font-black text-xs uppercase tracking-widest">คิวอาร์โค้ด</span>
                 </button>
                 <button @click="paymentMethod = 'transfer'; amountReceived = cartTotal"
                   class="flex flex-col items-center justify-center p-6 rounded-3xl border-2 transition-all"
                   :class="[ paymentMethod === 'transfer' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 hover:bg-slate-50' ]">
                   <span class="text-3xl mb-2">📱</span>
-                  <span class="font-black text-xs uppercase tracking-widest">Bank</span>
+                  <span class="font-black text-xs uppercase tracking-widest">โอนเงิน</span>
                 </button>
               </div>
             </div>
@@ -521,22 +518,21 @@ const formatDate = (dateStr: string) => {
             <!-- Cash Input -->
             <div v-if="paymentMethod === 'cash'" class="space-y-6 animate-in slide-in-from-top-4 duration-300">
               <div>
-                <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Amount
-                  Received</label>
+                <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">จำนวนเงินที่รับมา</label>
                 <div class="grid grid-cols-4 gap-2 mb-4">
                   <button v-for="amt in [ 100, 500, 1000 ]" :key="amt"
                     @click="amountReceived = (amountReceived || 0) + amt"
                     class="py-3 bg-slate-100 rounded-xl font-black text-xs hover:bg-slate-200 transition-all">+{{ amt
                     }}</button>
                   <button @click="amountReceived = cartTotal"
-                    class="py-3 bg-indigo-50 text-indigo-600 rounded-xl font-black text-xs border border-indigo-100">Exact</button>
+                    class="py-3 bg-indigo-50 text-indigo-600 rounded-xl font-black text-xs border border-indigo-100">พอดี</button>
                 </div>
                 <input type="number" v-model="amountReceived" placeholder="0.00"
                   class="w-full px-6 py-6 bg-slate-50 border border-slate-200 rounded-[2rem] text-4xl font-black focus:ring-2 focus:ring-indigo-500 text-center outline-none" />
               </div>
               <div v-if="amountReceived"
                 class="p-6 bg-emerald-50 rounded-3xl flex justify-between items-center border border-emerald-100">
-                <span class="text-lg font-black text-emerald-600 uppercase tracking-widest">Change</span>
+                <span class="text-lg font-black text-emerald-600 uppercase tracking-widest">เงินทอน</span>
                 <span class="text-4xl font-black text-emerald-700">{{ formatCurrency(changeDue) }}</span>
               </div>
             </div>
@@ -546,8 +542,7 @@ const formatDate = (dateStr: string) => {
               class="space-y-6 animate-in slide-in-from-top-4 duration-300">
               <div v-if="paymentMethod === 'qr'"
                 class="flex flex-col items-center p-6 bg-slate-50 rounded-3xl border border-slate-200">
-                <p class="font-bold text-slate-500 mb-4 uppercase tracking-widest text-[10px] text-center">Scan QR Code
-                  to pay {{ formatCurrency(cartTotal) }}</p>
+                <p class="font-bold text-slate-500 mb-4 uppercase tracking-widest text-[10px] text-center">สแกนคิวอาร์โค้ดเพื่อชำระเงิน {{ formatCurrency(cartTotal) }}</p>
                 <div
                   class="w-40 h-40 bg-white p-4 border-2 border-slate-100 rounded-2xl flex items-center justify-center relative shadow-sm mb-2">
                   <div class="grid grid-cols-4 grid-rows-4 gap-1 w-full h-full opacity-60">
@@ -557,36 +552,33 @@ const formatDate = (dateStr: string) => {
                   <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div
                       class="bg-white p-1 rounded-md shadow-md font-black text-indigo-600 text-[10px] uppercase border border-indigo-50">
-                      VENDORA PAY</div>
+                      จ่ายผ่าน VENDORA</div>
                   </div>
                 </div>
               </div>
 
               <div class="space-y-3">
-                <label class="block text-xs font-black text-slate-400 uppercase tracking-widest">Payment Evidence /
-                  Slip</label>
+                <label class="block text-xs font-black text-slate-400 uppercase tracking-widest">หลักฐานการชำระเงิน / สลิป</label>
                 <div
                   class="relative w-full aspect-video bg-slate-100 border-2 border-dashed border-slate-300 rounded-3xl overflow-hidden group flex items-center justify-center transition-all hover:bg-slate-200">
                   <img v-if="paymentSlip" :src="paymentSlip" class="w-full h-full object-cover" />
                   <div v-else class="text-center p-6">
                     <span class="text-4xl block mb-2">📸</span>
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Take Photo or Upload
-                      Slip</span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">ถ่ายภาพหรืออัปโหลดสลิป</span>
                   </div>
                   <input type="file" accept="image/*" capture="environment" @change="handleSlipUpload"
                     class="absolute inset-0 opacity-0 cursor-pointer" />
                   <div v-if="paymentSlip" class="absolute top-4 right-4">
                     <button @click="paymentSlip = null"
-                      class="bg-rose-500 text-white p-2 rounded-xl shadow-lg hover:bg-rose-600 transition-all font-black text-xs">RE-TAKE</button>
+                      class="bg-rose-500 text-white p-2 rounded-xl shadow-lg hover:bg-rose-600 transition-all font-black text-xs">ถ่ายใหม่</button>
                   </div>
                 </div>
               </div>
             </div>
 
             <div>
-              <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Order Notes
-                (Optional)</label>
-              <textarea v-model="notes" rows="2" placeholder="Customer requests, table number..."
+              <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">หมายเหตุเพิ่มเติม (ถ้ามี)</label>
+              <textarea v-model="notes" rows="2" placeholder="คำขอของลูกค้า, หมายเลขโต๊ะ..."
                 class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm transition-all outline-none"></textarea>
             </div>
           </div>
@@ -595,7 +587,7 @@ const formatDate = (dateStr: string) => {
         <div class="p-8 bg-slate-50 border-t border-slate-100">
           <button @click="completeCheckout"
             class="w-full py-6 bg-indigo-600 text-white rounded-[2rem] font-black text-xl shadow-2xl shadow-indigo-900/20 hover:bg-indigo-700 active:translate-y-0.5 transition-all">
-            Finish Transaction
+            เสร็จสิ้นรายการ
           </button>
         </div>
       </div>
@@ -607,7 +599,7 @@ const formatDate = (dateStr: string) => {
       <div
         class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
         <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-          <h3 class="text-2xl font-black text-slate-900">Product Detail</h3>
+          <h3 class="text-2xl font-black text-slate-900">รายละเอียดสินค้า</h3>
           <button @click="isProductModalOpen = false" class="text-slate-400 hover:text-slate-600 transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
@@ -637,9 +629,9 @@ const formatDate = (dateStr: string) => {
 
           <div class="space-y-4">
             <div class="flex justify-between items-center">
-              <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Select Quantity</span>
+              <span class="text-xs font-black text-slate-400 uppercase tracking-widest">เลือกจำนวน</span>
               <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-50 text-slate-400">
-                {{ selectedProduct?.stock }} available
+                มีอยู่ {{ selectedProduct?.stock }} ชิ้น
               </span>
             </div>
             <div class="flex items-center justify-center gap-6 bg-slate-50 rounded-[2rem] p-4 border border-slate-100">
@@ -655,7 +647,7 @@ const formatDate = (dateStr: string) => {
         <div class="p-8 bg-slate-50 border-t border-slate-100">
           <button @click="confirmAddToCart"
             class="w-full py-6 bg-indigo-600 text-white rounded-[2rem] font-black text-xl shadow-2xl shadow-indigo-900/20 hover:bg-indigo-700 transition-all">
-            Add to Order
+            เพิ่มลงในรายการ
           </button>
         </div>
       </div>
@@ -670,8 +662,8 @@ const formatDate = (dateStr: string) => {
           <div
             class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
             ✅</div>
-          <h3 class="text-2xl font-black text-slate-900">Payment Success</h3>
-          <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-1">Order #{{ lastOrder?.id }}</p>
+          <h3 class="text-2xl font-black text-slate-900">ชำระเงินสำเร็จ</h3>
+          <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-1">คำสั่งซื้อ #{{ lastOrder?.id }}</p>
         </div>
 
         <div class="flex-1 overflow-y-auto p-8 bg-white">
@@ -681,7 +673,7 @@ const formatDate = (dateStr: string) => {
               <p class="text-[10px] text-slate-500">{{ settings.address }}</p>
             </div>
             <div class="flex justify-between">
-              <span class="text-slate-500">Date:</span>
+              <span class="text-slate-500">วันที่:</span>
               <span class="font-bold">{{ formatDate(lastOrder?.timestamp || new Date().toISOString()) }}</span>
             </div>
             <div class="py-4 border-y border-dashed border-slate-200">
@@ -691,25 +683,25 @@ const formatDate = (dateStr: string) => {
               </div>
             </div>
             <div class="flex justify-between">
-              <span>Subtotal:</span>
+              <span>รวมเงิน:</span>
               <span>{{ formatCurrency(lastOrder?.subtotal || 0) }}</span>
             </div>
             <div v-if="lastOrder?.discount" class="flex justify-between text-rose-500">
-              <span>Discount:</span>
+              <span>ส่วนลด:</span>
               <span>-{{ formatCurrency(lastOrder?.discount) }}</span>
             </div>
             <div class="flex justify-between text-lg font-black pt-4 border-t border-slate-200 mt-4">
-              <span>Total:</span>
+              <span>ยอดรวมทั้งสิ้น:</span>
               <span>{{ formatCurrency(lastOrder?.total || 0) }}</span>
             </div>
           </div>
 
           <div class="text-center">
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Thank you for your purchase!
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">ขอบคุณที่ใช้บริการ!
             </p>
             <button @click="isReceiptModalOpen = false"
               class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-sm hover:bg-slate-800 transition-all">
-              Done
+              ตกลง
             </button>
           </div>
         </div>
@@ -723,9 +715,8 @@ const formatDate = (dateStr: string) => {
         class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[80vh] animate-in fade-in zoom-in-95 duration-200">
         <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
           <div>
-            <h3 class="text-2xl font-black text-slate-900">Held Bills</h3>
-            <p class="text-xs font-black text-slate-400 uppercase tracking-widest mt-1">{{ heldBills.length }} bills on
-              hold</p>
+            <h3 class="text-2xl font-black text-slate-900">บิลที่พักไว้</h3>
+            <p class="text-xs font-black text-slate-400 uppercase tracking-widest mt-1">มีบิลที่พักไว้ {{ heldBills.length }} รายการ</p>
           </div>
           <button @click="isHeldBillsModalOpen = false" class="text-slate-400 hover:text-slate-600 transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
@@ -739,7 +730,7 @@ const formatDate = (dateStr: string) => {
           <div v-if="heldBills.length === 0"
             class="h-64 flex flex-col items-center justify-center text-center opacity-30">
             <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-3xl">📂</div>
-            <p class="font-bold text-slate-500 uppercase tracking-widest text-xs">No held bills found</p>
+            <p class="font-bold text-slate-500 uppercase tracking-widest text-xs">ไม่พบบิลที่พักไว้</p>
           </div>
           <div v-else class="space-y-4">
             <div v-for="bill in heldBills" :key="bill.id"
@@ -752,7 +743,7 @@ const formatDate = (dateStr: string) => {
                     formatDate(bill.timestamp) }}</span>
                 </div>
                 <h4 class="font-black text-slate-900 truncate" v-if="bill.note">{{ bill.note }}</h4>
-                <p class="text-xs font-bold text-slate-500">{{ bill.items.length }} items — {{
+                <p class="text-xs font-bold text-slate-500">{{ bill.items.length }} รายการ — {{
                   formatCurrency(bill.items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0))
                   }}</p>
               </div>
@@ -767,7 +758,7 @@ const formatDate = (dateStr: string) => {
                 </button>
                 <button @click="handleResumeBill(bill.id)"
                   class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-black text-sm shadow-lg shadow-indigo-900/20 hover:bg-indigo-700 transition-all">
-                  Resume
+                  เรียกคืน
                 </button>
               </div>
             </div>

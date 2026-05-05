@@ -25,10 +25,10 @@
       <!-- Sidebar Footer -->
       <div class="p-4 border-t border-slate-800">
         <div class="bg-slate-800/50 rounded-2xl p-4 flex items-center space-x-3 text-left">
-          <div class="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0">JD</div>
+          <div class="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0">สม</div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-bold text-white truncate">John Doe</p>
-            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Admin</p>
+            <p class="text-sm font-bold text-white truncate">สมชาย ใจดี</p>
+            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">ผู้ดูแลระบบ</p>
           </div>
         </div>
       </div>
@@ -77,10 +77,10 @@
             </nav>
             <div class="p-4 border-t border-slate-800">
                <div class="bg-slate-800/50 rounded-2xl p-4 flex items-center space-x-3 text-left">
-                 <div class="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center text-white font-bold">JD</div>
+                 <div class="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center text-white font-bold">สม</div>
                  <div class="flex-1 min-w-0">
-                   <p class="text-sm font-bold text-white truncate">John Doe</p>
-                   <p class="text-[10px] text-slate-500 font-bold uppercase">Admin</p>
+                   <p class="text-sm font-bold text-white truncate">สมชาย ใจดี</p>
+                   <p class="text-[10px] text-slate-500 font-bold uppercase">ผู้ดูแลระบบ</p>
                  </div>
                </div>
             </div>
@@ -105,7 +105,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </span>
-            <input type="text" placeholder="Search..." 
+            <input type="text" placeholder="ค้นหา..." 
               class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48 md:w-64 lg:w-80 transition-all" />
           </div>
           
@@ -120,7 +120,7 @@
             </svg>
             <span class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
           </button>
-          <div class="w-8 h-8 lg:w-10 lg:h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-xs lg:text-sm font-bold shadow-lg shadow-indigo-200">JD</div>
+          <div class="w-8 h-8 lg:w-10 lg:h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-xs lg:text-sm font-bold shadow-lg shadow-indigo-200">สม</div>
         </div>
       </header>
 
@@ -141,7 +141,7 @@ const route = useRoute()
 // Dynamic Head Title
 useHead({
   titleTemplate: (titleChunk) => {
-    return titleChunk ? `${titleChunk} - Vendora` : 'Vendora'
+    return titleChunk ? `${titleChunk} - Vendora` : 'Vendora - ระบบจัดการร้านค้า'
   }
 })
 
@@ -155,13 +155,13 @@ const IconReports = () => h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 
 const IconSettings = () => h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor' }, [h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' }), h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z' })])
 
 const navLinks = [
-  { to: '/dashboard', label: 'Overview', icon: IconOverview },
-  { to: '/dashboard/pos', label: 'Point of Sale', icon: IconPOS },
-  { to: '/dashboard/orders', label: 'Orders History', icon: IconOrders },
-  { to: '/dashboard/products', label: 'Inventory', icon: IconInventory },
-  { to: '/dashboard/customers', label: 'Customers', icon: IconCustomers },
-  { to: '/dashboard/staff', label: 'Staff Management', icon: IconStaff },
-  { to: '/dashboard/reports', label: 'Reports', icon: IconReports },
-  { to: '/dashboard/settings', label: 'Settings', icon: IconSettings },
+  { to: '/dashboard', label: 'ภาพรวม', icon: IconOverview },
+  { to: '/dashboard/pos', label: 'ระบบขายหน้าร้าน', icon: IconPOS },
+  { to: '/dashboard/orders', label: 'ประวัติคำสั่งซื้อ', icon: IconOrders },
+  { to: '/dashboard/products', label: 'คลังสินค้า', icon: IconInventory },
+  { to: '/dashboard/customers', label: 'ลูกค้า', icon: IconCustomers },
+  { to: '/dashboard/staff', label: 'การจัดการพนักงาน', icon: IconStaff },
+  { to: '/dashboard/reports', label: 'รายงาน', icon: IconReports },
+  { to: '/dashboard/settings', label: 'การตั้งค่า', icon: IconSettings },
 ]
 </script>

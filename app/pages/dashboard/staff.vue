@@ -63,14 +63,14 @@ const handleDelete = (id: number) => {
   <div class="p-4 sm:p-6 lg:p-8">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 lg:gap-6 mb-8 lg:mb-10">
       <div>
-        <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">Staff Management</h1>
-        <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">Manage users and access permissions.</p>
+        <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">การจัดการพนักงาน</h1>
+        <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">จัดการข้อมูลผู้ใช้งานและสิทธิ์การเข้าถึงระบบ</p>
       </div>
       <button @click="openAddModal" class="flex items-center space-x-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all justify-center">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
         </svg>
-        <span>Add Staff</span>
+        <span>เพิ่มพนักงาน</span>
       </button>
     </div>
 
@@ -80,11 +80,11 @@ const handleDelete = (id: number) => {
         <table class="w-full text-left border-collapse min-w-[700px] lg:min-w-0">
           <thead>
             <tr class="bg-slate-50/50 border-b border-slate-100">
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Name / Username</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Role</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Joined Date</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">ชื่อ / ชื่อผู้ใช้งาน</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">บทบาท</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">วันที่เริ่มงาน</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">สถานะ</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">การจัดการ</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-50">
@@ -103,7 +103,7 @@ const handleDelete = (id: number) => {
               <td class="px-6 lg:px-8 py-4 lg:py-5">
                  <span class="px-2 lg:px-3 py-1 rounded-full text-[9px] lg:text-[10px] font-black uppercase tracking-wider whitespace-nowrap"
                     :class="staff.role === 'Admin' ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-600'">
-                    {{ staff.role }}
+                    {{ staff.role === 'Admin' ? 'ผู้ดูแลระบบ' : 'พนักงานขาย' }}
                  </span>
               </td>
               <td class="px-6 lg:px-8 py-4 lg:py-5 text-xs lg:text-sm text-slate-600 font-medium whitespace-nowrap">{{ staff.joinDate }}</td>
@@ -111,7 +111,7 @@ const handleDelete = (id: number) => {
                  <button @click="toggleStatus(staff)"
                     class="px-2 lg:px-3 py-1 rounded-full text-[9px] lg:text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap"
                     :class="staff.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'">
-                    {{ staff.status }}
+                    {{ staff.status === 'Active' ? 'เปิดใช้งาน' : 'ระงับการใช้งาน' }}
                  </button>
               </td>
               <td class="px-6 lg:px-8 py-4 lg:py-5 text-right">
@@ -140,38 +140,38 @@ const handleDelete = (id: number) => {
         <div class="p-6 lg:p-10">
           <div class="flex justify-between items-center mb-6 lg:mb-8">
             <h3 class="text-xl lg:text-3xl font-black text-slate-900 tracking-tight">
-              {{ isEditing ? 'Edit Staff' : 'Add Staff' }}
+              {{ isEditing ? 'แก้ไขข้อมูลพนักงาน' : 'เพิ่มพนักงานใหม่' }}
             </h3>
             <button @click="isModalOpen = false" class="text-slate-400 font-bold">X</button>
           </div>
           
           <form @submit.prevent="handleSubmit" class="space-y-4 lg:space-y-6">
             <div>
-               <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 lg:mb-2">Full Name</label>
+               <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 lg:mb-2">ชื่อ-นามสกุล</label>
                <input type="text" required v-model="form.name"
                   class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm"
-                  placeholder="Name" />
+                  placeholder="ชื่อ-นามสกุล" />
             </div>
 
             <div>
-               <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 lg:mb-2">Username</label>
+               <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 lg:mb-2">ชื่อผู้ใช้งาน</label>
                <input type="text" required v-model="form.username"
                   class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm"
                   placeholder="Username" />
             </div>
 
             <div>
-               <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 lg:mb-2">Role</label>
+               <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 lg:mb-2">บทบาท</label>
                <div class="grid grid-cols-2 gap-3 lg:gap-4">
                   <button type="button" @click="form.role = 'Admin'"
                      class="py-3 lg:py-4 rounded-xl lg:rounded-2xl border-2 font-bold transition-all text-xs lg:text-sm"
                      :class="form.role === 'Admin' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-sm' : 'border-slate-100 text-slate-400'">
-                     Admin
+                     ผู้ดูแลระบบ
                   </button>
                   <button type="button" @click="form.role = 'Cashier'"
                      class="py-3 lg:py-4 rounded-xl lg:rounded-2xl border-2 font-bold transition-all text-xs lg:text-sm"
                      :class="form.role === 'Cashier' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-sm' : 'border-slate-100 text-slate-400'">
-                     Cashier
+                     พนักงานขาย
                   </button>
                </div>
             </div>
@@ -179,11 +179,11 @@ const handleDelete = (id: number) => {
             <div class="pt-4 lg:pt-6 flex gap-3 lg:gap-4">
               <button type="button" @click="isModalOpen = false"
                 class="flex-1 py-3 lg:py-4 bg-slate-100 text-slate-600 rounded-xl lg:rounded-2xl font-black hover:bg-slate-200 transition-all text-sm">
-                Cancel
+                ยกเลิก
               </button>
               <button type="submit"
                 class="flex-1 py-3 lg:py-4 bg-indigo-600 text-white rounded-xl lg:rounded-2xl font-black shadow-xl text-sm hover:bg-indigo-700 transition-all">
-                {{ isEditing ? 'Update' : 'Save' }}
+                {{ isEditing ? 'อัปเดต' : 'บันทึก' }}
               </button>
             </div>
           </form>

@@ -136,8 +136,8 @@ const formatDate = (dateStr: string) => {
   <div class="p-8">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 lg:mb-10">
       <div>
-        <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">Products</h1>
-        <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">Manage catalog and stock levels.</p>
+        <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">คลังสินค้า</h1>
+        <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">จัดการรายการสินค้าและระดับสต็อกของคุณ</p>
       </div>
       <div class="flex flex-col sm:flex-row gap-3">
         <div class="relative w-full sm:w-64">
@@ -146,14 +146,14 @@ const formatDate = (dateStr: string) => {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </span>
-          <input type="text" v-model="searchQuery" placeholder="Search product..." 
+          <input type="text" v-model="searchQuery" placeholder="ค้นหาสินค้า..." 
             class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500" />
         </div>
         <button @click="openAddModal" class="flex items-center justify-center space-x-2 bg-indigo-600 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all text-sm sm:text-base">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
           </svg>
-          <span class="whitespace-nowrap">New Product</span>
+          <span class="whitespace-nowrap">เพิ่มสินค้าใหม่</span>
         </button>
       </div>
     </div>
@@ -161,19 +161,19 @@ const formatDate = (dateStr: string) => {
     <!-- Stats Row -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-8">
        <div class="bg-white p-4 lg:p-6 rounded-2xl lg:rounded-3xl border border-slate-100 shadow-sm">
-          <p class="text-[9px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 truncate">Total Products</p>
+          <p class="text-[9px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 truncate">สินค้าทั้งหมด</p>
           <p class="text-xl lg:text-2xl font-black text-slate-900">{{ products.length }}</p>
        </div>
        <div class="bg-white p-4 lg:p-6 rounded-2xl lg:rounded-3xl border border-slate-100 shadow-sm">
-          <p class="text-[9px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 truncate">Low Stock</p>
+          <p class="text-[9px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 truncate">สินค้าใกล้หมด</p>
           <p class="text-xl lg:text-2xl font-black text-amber-500">{{ products.filter(p => p.stock > 0 && p.stock <= 5).length }}</p>
        </div>
        <div class="bg-white p-4 lg:p-6 rounded-2xl lg:rounded-3xl border border-slate-100 shadow-sm">
-          <p class="text-[9px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 truncate">Out of Stock</p>
+          <p class="text-[9px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 truncate">สินค้าหมด</p>
           <p class="text-xl lg:text-2xl font-black text-rose-500">{{ products.filter(p => p.stock === 0).length }}</p>
        </div>
        <div class="bg-white p-4 lg:p-6 rounded-2xl lg:rounded-3xl border border-slate-100 shadow-sm">
-          <p class="text-[9px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 truncate">Total Stock Value</p>
+          <p class="text-[9px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 truncate">มูลค่าคลังสินค้า</p>
           <p class="text-xl lg:text-2xl font-black text-indigo-600 truncate">{{ formatCurrency(products.reduce((sum, p) => sum + (p.price * p.stock), 0)) }}</p>
        </div>
     </div>
@@ -184,12 +184,12 @@ const formatDate = (dateStr: string) => {
         <table class="w-full text-left border-collapse min-w-[1000px] lg:min-w-0">
           <thead>
             <tr class="bg-slate-50/50 border-b border-slate-100">
-              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Product Details</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Inventory</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Cost</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Price</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">Margin</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px] text-right">Actions</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">รายละเอียดสินค้า</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">จำนวนคงเหลือ</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">ต้นทุน</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">ราคาขาย</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px]">กำไรต่อหน่วย</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-slate-500 uppercase tracking-wider text-[10px] text-right">การจัดการ</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-50">
@@ -204,13 +204,13 @@ const formatDate = (dateStr: string) => {
                   </div>
                   <div class="min-w-0">
                     <span class="font-bold text-slate-900 block truncate text-sm lg:text-base">{{ product.name }}</span>
-                    <span class="text-[9px] lg:text-[10px] font-black text-slate-400 uppercase tracking-tighter truncate block">{{ product.category }} • {{ product.sku || 'NO SKU' }}</span>
+                    <span class="text-[9px] lg:text-[10px] font-black text-slate-400 uppercase tracking-tighter truncate block">{{ product.category }} • {{ product.sku || 'ไม่มี SKU' }}</span>
                   </div>
                 </div>
               </td>
               <td class="px-6 lg:px-8 py-4 lg:py-5">
                 <div class="flex flex-col">
-                  <span class="text-slate-900 font-bold text-xs lg:text-sm">{{ product.stock }} units</span>
+                  <span class="text-slate-900 font-bold text-xs lg:text-sm">{{ product.stock }} ชิ้น</span>
                   <span class="text-[9px] lg:text-[10px] text-slate-400 font-bold uppercase truncate">{{ product.barcode || '-' }}</span>
                 </div>
               </td>
@@ -219,17 +219,17 @@ const formatDate = (dateStr: string) => {
               <td class="px-6 lg:px-8 py-4 lg:py-5">
                  <div class="flex flex-col">
                     <span class="text-emerald-600 font-black text-xs lg:text-sm">{{ formatCurrency(product.price - (product.cost || 0)) }}</span>
-                    <span class="text-[9px] font-bold text-slate-400 uppercase">Profit / Unit</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase">กำไร</span>
                  </div>
               </td>
               <td class="px-6 lg:px-8 py-4 lg:py-5 text-right">
                 <div class="flex justify-end space-x-1 lg:space-x-2">
-                  <button @click="openMovementModal(product)" class="p-1.5 lg:p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg lg:rounded-xl transition-all" title="Movement History">
+                  <button @click="openMovementModal(product)" class="p-1.5 lg:p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg lg:rounded-xl transition-all" title="ประวัติการเคลื่อนไหว">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 lg:h-5 lg:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </button>
-                  <button @click="openStockModal(product)" class="p-1.5 lg:p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg lg:rounded-xl transition-all" title="Adjust Stock">
+                  <button @click="openStockModal(product)" class="p-1.5 lg:p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg lg:rounded-xl transition-all" title="ปรับสต็อก">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 lg:h-5 lg:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
@@ -258,7 +258,7 @@ const formatDate = (dateStr: string) => {
         <div class="p-10">
           <div class="flex justify-between items-center mb-8">
             <h3 class="text-3xl font-black text-slate-900 tracking-tight">
-              {{ isEditing ? 'Edit Product' : 'Create New Product' }}
+              {{ isEditing ? 'แก้ไขสินค้า' : 'สร้างสินค้าใหม่' }}
             </h3>
             <button @click="isModalOpen = false" class="text-slate-400 hover:text-slate-600 transition-colors">X</button>
           </div>
@@ -270,26 +270,26 @@ const formatDate = (dateStr: string) => {
                 <img v-if="currentProduct.image" :src="currentProduct.image" class="w-full h-full object-cover" />
                 <div v-else class="text-center p-4">
                   <span class="text-2xl mb-1 block">📸</span>
-                  <span class="text-[10px] font-bold text-slate-400 uppercase">Upload Image</span>
+                  <span class="text-[10px] font-bold text-slate-400 uppercase">อัปโหลดรูปภาพ</span>
                 </div>
                 <input type="file" accept="image/*" @change="handleImageUpload" class="absolute inset-0 opacity-0 cursor-pointer" />
                 <div v-if="currentProduct.image" class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                   <span class="text-white text-[10px] font-bold uppercase">Change Image</span>
+                   <span class="text-white text-[10px] font-bold uppercase">เปลี่ยนรูปภาพ</span>
                 </div>
               </div>
-              <button v-if="currentProduct.image" type="button" @click="currentProduct.image = ''" class="mt-2 text-rose-500 text-[10px] font-bold uppercase hover:underline">Remove Image</button>
+              <button v-if="currentProduct.image" type="button" @click="currentProduct.image = ''" class="mt-2 text-rose-500 text-[10px] font-bold uppercase hover:underline">ลบรูปภาพ</button>
             </div>
 
             <div class="grid grid-cols-2 gap-6">
               <div class="col-span-2">
-                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Product Name</label>
+                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">ชื่อสินค้า</label>
                 <input type="text" required v-model="currentProduct.name"
                   class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500"
-                  placeholder="e.g. Cold Brew Coffee" />
+                  placeholder="เช่น กาแฟโคลด์บริว" />
               </div>
               
               <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Category</label>
+                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">หมวดหมู่</label>
                 <select v-model="currentProduct.category"
                   class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 appearance-none">
                   <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
@@ -298,19 +298,19 @@ const formatDate = (dateStr: string) => {
               
               <div class="grid grid-cols-2 gap-4">
                  <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Cost (฿)</label>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">ต้นทุน (฿)</label>
                     <input type="number" required v-model="currentProduct.cost" step="0.01"
                       class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-600" />
                  </div>
                  <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Price (฿)</label>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">ราคาขาย (฿)</label>
                     <input type="number" required v-model="currentProduct.price" step="0.01"
                       class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 font-black text-indigo-600" />
                  </div>
               </div>
 
               <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Barcode</label>
+                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">บาร์โค้ด</label>
                 <input type="text" v-model="currentProduct.barcode"
                   class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500"
                   placeholder="885..." />
@@ -324,7 +324,7 @@ const formatDate = (dateStr: string) => {
               </div>
 
               <div v-if="!isEditing">
-                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Initial Stock</label>
+                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">สต็อกเริ่มต้น</label>
                 <input type="number" required v-model="currentProduct.stock"
                   class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500" />
               </div>
@@ -333,11 +333,11 @@ const formatDate = (dateStr: string) => {
             <div class="pt-6 flex space-x-4">
               <button type="button" @click="isModalOpen = false"
                 class="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black hover:bg-slate-200 transition-all">
-                Cancel
+                ยกเลิก
               </button>
               <button type="submit"
                 class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all">
-                {{ isEditing ? 'Update Product' : 'Add to Catalog' }}
+                {{ isEditing ? 'อัปเดตสินค้า' : 'เพิ่มลงในคลัง' }}
               </button>
             </div>
           </form>
@@ -349,20 +349,20 @@ const formatDate = (dateStr: string) => {
     <div v-if="isStockModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in duration-200">
           <div class="p-10">
-             <h3 class="text-2xl font-black text-slate-900 mb-6">Adjust Stock</h3>
+             <h3 class="text-2xl font-black text-slate-900 mb-6">ปรับปรุงสต็อก</h3>
              <div class="space-y-6">
                 <div>
-                   <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Quantity to Add/Remove</label>
+                   <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">จำนวนที่เพิ่ม/ลด</label>
                    <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                       <button @click="stockAdjustment--" class="w-10 h-10 bg-white rounded-xl shadow-sm font-black">-</button>
                       <input type="number" v-model="stockAdjustment" class="flex-1 bg-transparent text-center font-black text-xl outline-none" />
                       <button @click="stockAdjustment++" class="w-10 h-10 bg-white rounded-xl shadow-sm font-black">+</button>
                    </div>
-                   <p class="text-[10px] font-bold text-slate-400 mt-2 text-center uppercase">Use negative numbers to reduce stock</p>
+                   <p class="text-[10px] font-bold text-slate-400 mt-2 text-center uppercase">ใช้ตัวเลขติดลบเพื่อลดจำนวนสต็อก</p>
                 </div>
                 <div class="flex gap-3">
-                   <button @click="isStockModalOpen = false" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">Cancel</button>
-                   <button @click="handleAddStock" class="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-bold shadow-lg shadow-emerald-100">Update</button>
+                   <button @click="isStockModalOpen = false" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">ยกเลิก</button>
+                   <button @click="handleAddStock" class="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-bold shadow-lg shadow-emerald-100">อัปเดต</button>
                 </div>
              </div>
           </div>
@@ -374,14 +374,14 @@ const formatDate = (dateStr: string) => {
        <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in duration-200">
           <div class="p-10 border-b border-slate-100 flex justify-between items-center">
              <div>
-                <h3 class="text-2xl font-black text-slate-900">Stock History</h3>
+                <h3 class="text-2xl font-black text-slate-900">ประวัติการเคลื่อนไหวสต็อก</h3>
                 <p class="text-sm font-medium text-slate-500 mt-1">{{ selectedProductForMovement?.name }}</p>
              </div>
              <button @click="isMovementModalOpen = false" class="text-slate-400 hover:text-slate-600 font-bold">X</button>
           </div>
           <div class="p-10 overflow-y-auto">
              <div v-if="filteredMovements.length === 0" class="text-center py-20 opacity-40 font-bold">
-                No movements recorded yet.
+                ยังไม่มีรายการบันทึก
              </div>
              <div class="space-y-4">
                 <div v-for="m in filteredMovements" :key="m.id" class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
@@ -395,12 +395,12 @@ const formatDate = (dateStr: string) => {
                          {{ m.type === 'In' ? '+' : '-' }}
                       </div>
                       <div>
-                         <p class="font-bold text-slate-900">{{ m.type }} ({{ m.quantity }})</p>
+                         <p class="font-bold text-slate-900">{{ m.type === 'In' ? 'รับเข้า' : m.type === 'Sale' ? 'ขายสินค้า' : 'ปรับปรุง' }} ({{ m.quantity }})</p>
                          <p class="text-[10px] text-slate-400 font-bold uppercase">{{ formatDate(m.timestamp) }}</p>
                       </div>
                    </div>
                    <div class="text-right">
-                      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Balance</p>
+                      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">คงเหลือ</p>
                       <p class="font-black text-slate-900">{{ m.newStock }}</p>
                    </div>
                 </div>

@@ -20,11 +20,11 @@ export const useCustomers = () => {
         customers.value = JSON.parse(saved)
       } else {
         customers.value = [
-          { id: 1, name: 'Somchai Dee', phone: '081-234-5678', points: 1250, level: 'Platinum', joinDate: '2025-01-15' },
-          { id: 2, name: 'Somsri Rakdee', phone: '089-876-5432', points: 450, level: 'Gold', joinDate: '2025-02-10' },
-          { id: 3, name: 'Wichai Chuenjai', phone: '082-333-4444', points: 120, level: 'Silver', joinDate: '2025-03-05' },
-          { id: 4, name: 'Ananya Srisuk', phone: '085-111-2222', points: 2800, level: 'Platinum', joinDate: '2025-01-20' },
-          { id: 5, name: 'Kitti Wattana', phone: '086-444-5555', points: 85, level: 'Silver', joinDate: '2025-04-12' },
+          { id: 1, name: 'สมชาย ดีเลิศ', phone: '081-234-5678', points: 1250, level: 'Platinum', joinDate: '2025-01-15' },
+          { id: 2, name: 'สมศรี รักดี', phone: '089-876-5432', points: 450, level: 'Gold', joinDate: '2025-02-10' },
+          { id: 3, name: 'วิชัย ชื่นใจ', phone: '082-333-4444', points: 120, level: 'Silver', joinDate: '2025-03-05' },
+          { id: 4, name: 'อนันยา ศรีสุข', phone: '085-111-2222', points: 2800, level: 'Platinum', joinDate: '2025-01-20' },
+          { id: 5, name: 'กิตติ วัฒนา', phone: '086-444-5555', points: 85, level: 'Silver', joinDate: '2025-04-12' },
         ]
       }
       isInitialLoad.value = false

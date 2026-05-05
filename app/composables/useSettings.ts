@@ -13,14 +13,14 @@ export interface StoreSettings {
 
 export const useSettings = () => {
   const settings = ref<StoreSettings>({
-    name: 'Vendora',
+    name: 'เวนโดร่า (Vendora)',
     logo: '',
-    address: '123 Tech Avenue, Digital City',
+    address: '123 ถนนเทคโนโลยี แขวงดิจิทัล เขตไอที กรุงเทพมหานคร',
     phone: '02-123-4567',
     taxRate: 7,
     includeTax: true,
     currency: 'THB',
-    receiptNote: 'Thank you for your business!'
+    receiptNote: 'ขอบคุณที่ใช้บริการ!'
   })
 
   const loadSettings = () => {

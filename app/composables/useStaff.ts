@@ -20,8 +20,8 @@ export const useStaff = () => {
         staffMembers.value = JSON.parse(saved)
       } else {
         staffMembers.value = [
-          { id: 1, name: 'Admin User', username: 'admin', role: 'Admin', joinDate: '2025-01-01', status: 'Active' },
-          { id: 2, name: 'John Doe', username: 'cashier1', role: 'Cashier', joinDate: '2025-03-01', status: 'Active' }
+          { id: 1, name: 'ผู้ดูแลระบบ', username: 'admin', role: 'Admin', joinDate: '2025-01-01', status: 'Active' },
+          { id: 2, name: 'สมชาย ใจดี', username: 'cashier1', role: 'Cashier', joinDate: '2025-03-01', status: 'Active' }
         ]
       }
       isInitialLoad.value = false

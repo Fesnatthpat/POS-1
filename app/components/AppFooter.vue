@@ -6,44 +6,44 @@
                     <NuxtLink to="/" class="flex items-center space-x-2 mb-6 group">
                         <div
                             class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-lg leading-none">
-                            <span class="font-black text-sm italic">P</span>
+                            <span class="font-black text-sm italic">V</span>
                         </div>
-                        <span class="text-xl font-bold tracking-tight text-white">POS.</span>
+                        <span class="text-xl font-bold tracking-tight text-white italic">Vendora.</span>
                     </NuxtLink>
                     <p class="text-sm leading-relaxed text-slate-400">
-                        Making business management simple, efficient, and accessible for everyone.
+                        ทำให้การจัดการธุรกิจเป็นเรื่องง่าย มีประสิทธิภาพ และเข้าถึงได้สำหรับทุกคน
                     </p>
                 </div>
 
                 <div>
-                    <h4 class="text-white font-bold mb-6">Product</h4>
+                    <h4 class="text-white font-bold mb-6">ผลิตภัณฑ์</h4>
                     <ul class="space-y-4 text-sm">
-                        <li><a href="#" class="hover:text-indigo-400 transition-colors">Features</a></li>
-                        <li><a href="#" class="hover:text-indigo-400 transition-colors">Integrations</a></li>
-                        <li><a href="#" class="hover:text-indigo-400 transition-colors">Pricing</a></li>
-                        <li><a href="#" class="hover:text-indigo-400 transition-colors">Changelog</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">คุณสมบัติ</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">การเชื่อมต่อ</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">ราคา</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">บันทึกการเปลี่ยนแปลง</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4 class="text-white font-bold mb-6">Company</h4>
+                    <h4 class="text-white font-bold mb-6">บริษัท</h4>
                     <ul class="space-y-4 text-sm">
-                        <li><a href="#" class="hover:text-indigo-400 transition-colors">About Us</a></li>
-                        <li><a href="#" class="hover:text-indigo-400 transition-colors">Careers</a></li>
-                        <li><a href="#" class="hover:text-indigo-400 transition-colors">Contact</a></li>
-                        <li><a href="#" class="hover:text-indigo-400 transition-colors">Privacy</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">เกี่ยวกับเรา</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">ร่วมงานกับเรา</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">ติดต่อเรา</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">ความเป็นส่วนตัว</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4 class="text-white font-bold mb-6">Newsletter</h4>
-                    <p class="text-sm text-slate-400 mb-4">Stay updated with the latest POS trends.</p>
+                    <h4 class="text-white font-bold mb-6">จดหมายข่าว</h4>
+                    <p class="text-sm text-slate-400 mb-4">ติดตามข่าวสารและเทรนด์ POS ล่าสุด</p>
                     <div class="flex">
-                        <input type="email" placeholder="Email"
+                        <input type="email" placeholder="อีเมลของคุณ"
                             class="bg-slate-800 border-none rounded-l-lg px-4 py-2 text-sm focus:ring-1 focus:ring-indigo-500 w-full" />
                         <button
                             class="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-r-lg text-white transition-colors">
-                            Go
+                            ไป
                         </button>
                     </div>
                 </div>
@@ -51,7 +51,7 @@
 
             <div
                 class="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
-                <p>© 2026 POS System. All rights reserved.</p>
+                <p>© 2026 ระบบ Vendora POS สงวนลิขสิทธิ์ทั้งหมด</p>
                 <div class="flex space-x-6 mt-4 md:mt-0">
                     <a href="#" class="hover:text-white transition-colors">Twitter</a>
                     <a href="#" class="hover:text-white transition-colors">LinkedIn</a>

@@ -27,7 +27,7 @@ export interface StockMovement {
 export const useProducts = () => {
   const products = ref<Product[]>([])
   const stockMovements = ref<StockMovement[]>([])
-  const categories = ref<string[]>(['Beverages', 'Bakery', 'Snacks', 'Main Course', 'Others'])
+  const categories = ref<string[]>(['เครื่องดื่ม', 'เบเกอรี่', 'ของว่าง', 'อาหารจานหลัก', 'อื่นๆ'])
   const isInitialLoad = ref(true)
 
   const loadProducts = () => {
@@ -36,16 +36,16 @@ export const useProducts = () => {
       if (savedProducts) products.value = JSON.parse(savedProducts)
       else {
         products.value = [
-          { id: 1, name: 'Premium Espresso', category: 'Beverages', cost: 25, price: 65, stock: 45, barcode: '885000000001', sku: 'COF-001' },
-          { id: 2, name: 'Iced Green Tea Latte', category: 'Beverages', cost: 30, price: 75, stock: 32, barcode: '885000000002', sku: 'TEA-001' },
-          { id: 3, name: 'Butter Croissant', category: 'Bakery', cost: 18, price: 45, stock: 12, barcode: '885000000003', sku: 'BAK-001' },
-          { id: 4, name: 'Chocolate Muffin', category: 'Bakery', cost: 22, price: 55, stock: 8, barcode: '885000000004', sku: 'BAK-002' },
-          { id: 5, name: 'Ham & Cheese Sandwich', category: 'Snacks', cost: 35, price: 85, stock: 4, barcode: '885000000005', sku: 'SNA-001' },
-          { id: 6, name: 'Spaghetti Carbonara', category: 'Main Course', cost: 65, price: 159, stock: 15, barcode: '885000000006', sku: 'MAIN-001' },
-          { id: 7, name: 'Caramel Macchiato', category: 'Beverages', cost: 35, price: 85, stock: 0, barcode: '885000000007', sku: 'COF-002' },
-          { id: 8, name: 'Blueberry Cheesecake', category: 'Bakery', cost: 45, price: 110, stock: 6, barcode: '885000000008', sku: 'BAK-003' },
-          { id: 9, name: 'Potato Chips (Sea Salt)', category: 'Snacks', cost: 15, price: 35, stock: 50, barcode: '885000000009', sku: 'SNA-002' },
-          { id: 10, name: 'Mineral Water 500ml', category: 'Beverages', cost: 5, price: 15, stock: 120, barcode: '885000000010', sku: 'BEV-001' },
+          { id: 1, name: 'เอสเพรสโซ่ พรีเมียม', category: 'เครื่องดื่ม', cost: 25, price: 65, stock: 45, barcode: '885000000001', sku: 'COF-001' },
+          { id: 2, name: 'ชาเขียวลาเต้เย็น', category: 'เครื่องดื่ม', cost: 30, price: 75, stock: 32, barcode: '885000000002', sku: 'TEA-001' },
+          { id: 3, name: 'ครัวซองต์เนยสด', category: 'เบเกอรี่', cost: 18, price: 45, stock: 12, barcode: '885000000003', sku: 'BAK-001' },
+          { id: 4, name: 'มัฟฟินช็อกโกแลต', category: 'เบเกอรี่', cost: 22, price: 55, stock: 8, barcode: '885000000004', sku: 'BAK-002' },
+          { id: 5, name: 'แซนวิชแฮมชีส', category: 'ของว่าง', cost: 35, price: 85, stock: 4, barcode: '885000000005', sku: 'SNA-001' },
+          { id: 6, name: 'สปาเก็ตตี้คาโบนาร่า', category: 'อาหารจานหลัก', cost: 65, price: 159, stock: 15, barcode: '885000000006', sku: 'MAIN-001' },
+          { id: 7, name: 'คาราเมลมัคคิอาโต้', category: 'เครื่องดื่ม', cost: 35, price: 85, stock: 0, barcode: '885000000007', sku: 'COF-002' },
+          { id: 8, name: 'บลูเบอร์รี่ชีสเค้ก', category: 'เบเกอรี่', cost: 45, price: 110, stock: 6, barcode: '885000000008', sku: 'BAK-003' },
+          { id: 9, name: 'มันฝรั่งทอด (รสเกลือ)', category: 'ของว่าง', cost: 15, price: 35, stock: 50, barcode: '885000000009', sku: 'SNA-002' },
+          { id: 10, name: 'น้ำเปล่า 500มล.', category: 'เครื่องดื่ม', cost: 5, price: 15, stock: 120, barcode: '885000000010', sku: 'BEV-001' },
         ]
       }
 
@@ -62,7 +62,7 @@ export const useProducts = () => {
           previousStock: 0,
           newStock: p.stock,
           timestamp: new Date().toISOString(),
-          note: 'Initial Inventory Setup'
+          note: 'ตั้งค่าสต็อกเริ่มต้น'
         }))
       }
 
@@ -95,7 +95,7 @@ export const useProducts = () => {
       quantity: newProduct.stock,
       previousStock: 0,
       newStock: newProduct.stock,
-      note: 'Added new product'
+      note: 'เพิ่มสินค้าใหม่'
     })
     saveProducts()
   }
@@ -125,7 +125,7 @@ export const useProducts = () => {
         quantity: -quantity,
         previousStock: prev,
         newStock: product.stock,
-        note: type === 'Sale' ? 'POS Sale' : 'Inventory adjustment'
+        note: type === 'Sale' ? 'รายการขายหน้าร้าน' : 'ปรับปรุงสต็อกสินค้า'
       })
       saveProducts()
     }
@@ -143,7 +143,7 @@ export const useProducts = () => {
         quantity,
         previousStock: prev,
         newStock: product.stock,
-        note: 'Restock'
+        note: 'เติมสต็อกสินค้า'
       })
       saveProducts()
     }
