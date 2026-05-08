@@ -11,32 +11,69 @@ export default defineEventHandler(async (event) => {
   }
 
   if (method === 'POST') {
-    const body = await readBody(event)
-    return await prisma.product.create({
-      data: {
-        name: body.name,
-        category: body.category,
-        price: Number(body.price),
-        cost: Number(body.cost),
-        stock: Number(body.stock || 0),
-        minStockThreshold: Number(body.minStockThreshold || 5),
-        barcode: body.barcode,
-        sku: body.sku,
-        image: body.image,
-        // Create initial movement if stock is provided
-        movements: body.stock > 0 ? {
-          create: {
-            productName: body.name,
-            type: 'In',
-            quantity: Number(body.stock),
-            previousStock: 0,
-            newStock: Number(body.stock),
-            costAtTime: Number(body.cost),
-            note: 'ตั้งค่าสต็อกเริ่มต้น'
-          }
-        } : undefined
+    try {
+      const body = await readBody(event)
+      console.log('Creating product with body:', body)
+
+      if (!body.name || !body.price) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'ชื่อสินค้าและราคาเป็นข้อมูลที่จำเป็น'
+        })
       }
-    })
+
+      // Find or create category
+      let categoryId = null
+      if (body.category) {
+        let cat = await prisma.category.findUnique({
+          where: { name: body.category }
+        })
+        
+        if (!cat) {
+          console.log(`Category "${body.category}" not found, creating...`)
+          cat = await prisma.category.create({
+            data: { name: body.category }
+          })
+        }
+        categoryId = cat.id
+      }
+
+      const product = await prisma.product.create({
+        data: {
+          name: body.name,
+          category: body.category || 'อื่นๆ',
+          categoryId: categoryId,
+          price: Number(body.price),
+          cost: Number(body.cost || 0),
+          stock: Number(body.stock || 0),
+          minStockThreshold: Number(body.minStockThreshold || 5),
+          barcode: body.barcode || null,
+          sku: body.sku || null,
+          image: body.image || null,
+          // Create initial movement if stock is provided
+          movements: Number(body.stock) > 0 ? {
+            create: {
+              productName: body.name,
+              type: 'In',
+              quantity: Number(body.stock),
+              previousStock: 0,
+              newStock: Number(body.stock),
+              costAtTime: Number(body.cost || 0),
+              note: 'ตั้งค่าสต็อกเริ่มต้น'
+            }
+          } : undefined
+        }
+      })
+      
+      console.log('Product created successfully:', product.id)
+      return product
+    } catch (error: any) {
+      console.error('Error creating product:', error)
+      throw createError({
+        statusCode: error.statusCode || 500,
+        statusMessage: `Failed to create product: ${error.message}`
+      })
+    }
   }
 
   if (method === 'PUT') {

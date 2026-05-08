@@ -147,13 +147,31 @@ const openEditModal = (product: Product) => {
   isModalOpen.value = true
 }
 
+const isSaving = ref(false)
+
 const saveProduct = async () => {
-  if (isEditing.value && editingId.value) {
-    await updateProduct(editingId.value, currentProduct.value)
-  } else {
-    await addProduct(currentProduct.value)
+  if (isSaving.value) return
+  
+  if (!currentProduct.value.name || currentProduct.value.price <= 0) {
+    alert('กรุณากรอกชื่อสินค้าและราคาให้ถูกต้อง')
+    return
   }
-  isModalOpen.value = false
+
+  isSaving.value = true
+  try {
+    if (isEditing.value && editingId.value) {
+      await updateProduct(editingId.value, currentProduct.value)
+    } else {
+      await addProduct(currentProduct.value)
+    }
+    isModalOpen.value = false
+    // Optional: add a success toast here
+  } catch (err: any) {
+    console.error(err)
+    alert(err.statusMessage || 'เกิดข้อผิดพลาดในการบันทึกสินค้า')
+  } finally {
+    isSaving.value = false
+  }
 }
 
 const handleDelete = (id: number) => {
@@ -506,8 +524,9 @@ const formatDate = (dateStr: string) => {
               <div class="pt-8 border-t border-slate-100 flex justify-end gap-4">
                 <button type="button" @click="isModalOpen = false"
                   class="px-8 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black text-sm transition-all hover:bg-slate-200">ยกเลิก</button>
-                <button type="submit" :disabled="isUploadingImage"
-                  class="px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-indigo-100 transition-all hover:bg-indigo-700 disabled:opacity-50">
+                <button type="submit" :disabled="isUploadingImage || isSaving"
+                  class="px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-indigo-100 transition-all hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2">
+                  <span v-if="isSaving" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                   {{ isEditing ? 'บันทึกการแก้ไข' : 'เพิ่มสินค้าลงคลัง' }}
                 </button>
               </div>

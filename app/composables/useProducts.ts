@@ -53,19 +53,23 @@ export const useProducts = () => {
 
   const addProduct = async (product: Omit<Product, 'id'>) => {
     try {
-      await $fetch('/api/products', { method: 'POST', body: product })
+      const result = await $fetch<Product>('/api/products', { method: 'POST', body: product })
       await loadProducts()
+      return result
     } catch (err) {
       console.error('Failed to add product:', err)
+      throw err
     }
   }
 
   const updateProduct = async (id: number, updates: Partial<Product>) => {
     try {
-      await $fetch('/api/products', { method: 'PUT', body: { id, ...updates } })
+      const result = await $fetch<Product>('/api/products', { method: 'PUT', body: { id, ...updates } })
       await loadProducts()
+      return result
     } catch (err) {
       console.error('Failed to update product:', err)
+      throw err
     }
   }
 
