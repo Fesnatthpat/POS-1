@@ -169,6 +169,7 @@ const navLinks = computed(() => {
     { to: '/dashboard/pos', label: 'ระบบขายหน้าร้าน', icon: IconPOS, feature: 'enablePOS' },
     { to: '/dashboard/orders', label: 'ประวัติคำสั่งซื้อ', icon: IconOrders, feature: 'enableOrders' },
     { to: '/dashboard/products', label: 'คลังสินค้า', icon: IconInventory, feature: 'enableProducts' },
+    { to: '/dashboard/stock-in', label: 'รับสินค้าเข้า (Stock In)', icon: IconInventory, feature: 'enableProducts' },
     { to: '/dashboard/customers', label: 'ลูกค้า', icon: IconCustomers, feature: 'enableCustomers' },
     { to: '/dashboard/staff', label: 'การจัดการพนักงาน', icon: IconStaff, feature: 'enableStaff' },
     { to: '/dashboard/reports', label: 'รายงาน', icon: IconReports, feature: 'enableReports' },

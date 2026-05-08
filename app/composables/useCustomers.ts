@@ -1,18 +1,11 @@
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 
 export interface PointLog {
   id: number
   date: string
   amount: number
-  before: number
   after: number
   note: string
-}
-
-export interface RewardRecord {
-  id: number
-  date: string
-  pointsExchanged: number
 }
 
 export interface Customer {
@@ -22,130 +15,65 @@ export interface Customer {
   points: number
   level: string
   joinDate: string
-  rewardsEarned?: number
-  rewardHistory?: RewardRecord[]
-  pointHistory?: PointLog[]
+  pointLogs?: any[]
+  rewardsEarned: number
 }
 
 export const useCustomers = () => {
   const customers = ref<Customer[]>([])
-  const isInitialLoad = ref(true)
+  const isLoading = ref(false)
 
-  const loadCustomers = () => {
-    if (process.client) {
-      const saved = localStorage.getItem('pos_customers')
-      if (saved) {
-        customers.value = JSON.parse(saved)
-      } else {
-        customers.value = [
-          { id: 1, name: 'สมชาย ดีเลิศ', phone: '081-234-5678', points: 5, level: 'Platinum', joinDate: '2025-01-15', rewardsEarned: 2, rewardHistory: [], pointHistory: [] },
-          { id: 2, name: 'สมศรี รักดี', phone: '089-876-5432', points: 8, level: 'Gold', joinDate: '2025-02-10', rewardsEarned: 0, rewardHistory: [], pointHistory: [] },
-          { id: 3, name: 'วิชัย ชื่นใจ', phone: '082-333-4444', points: 2, level: 'Silver', joinDate: '2025-03-05', rewardsEarned: 0, rewardHistory: [], pointHistory: [] },
-        ]
-      }
-      isInitialLoad.value = false
+  const loadCustomers = async () => {
+    isLoading.value = true
+    try {
+      customers.value = await $fetch<Customer[]>('/api/customers')
+    } catch (err) {
+      console.error('Failed to load customers:', err)
+    } finally {
+      isLoading.value = false
     }
   }
 
-  const saveCustomers = () => {
-    if (process.client) {
-      localStorage.setItem('pos_customers', JSON.stringify(customers.value))
+  const addCustomer = async (customer: any) => {
+    try {
+      await $fetch('/api/customers', { method: 'POST', body: customer })
+      await loadCustomers()
+    } catch (err) {
+      console.error('Failed to add customer:', err)
     }
   }
 
-  const addCustomer = (customer: Omit<Customer, 'id' | 'points' | 'joinDate' | 'rewardsEarned' | 'rewardHistory' | 'pointHistory'>) => {
-    const newCustomer: Customer = {
-      ...customer,
-      id: Date.now(),
-      points: 0,
-      rewardsEarned: 0,
-      rewardHistory: [],
-      pointHistory: [],
-      joinDate: new Date().toISOString().split('T')[0]
+  const updateCustomer = async (id: number, updates: Partial<Customer>) => {
+    try {
+      await $fetch('/api/customers', { method: 'PUT', body: { id, ...updates } })
+      await loadCustomers()
+    } catch (err) {
+      console.error('Failed to update customer:', err)
     }
-    customers.value.push(newCustomer)
-    saveCustomers()
   }
 
-  const addPoints = (id: number, points: number) => {
-    const customer = customers.value.find(c => c.id === id)
-    if (customer) {
-      const originalPoints = Number(customer.points)
-      const changeAmount = Number(points)
-      let newPoints = originalPoints + changeAmount
-      
-      if (!customer.pointHistory) customer.pointHistory = []
+  const deleteCustomer = async (id: number) => {
+    try {
+      await $fetch(`/api/customers?id=${id}`, { method: 'DELETE' })
+      await loadCustomers()
+    } catch (err) {
+      console.error('Failed to delete customer:', err)
+    }
+  }
 
-      // Clamp at 0
-      newPoints = Math.max(0, newPoints)
-
-      // Record History
-      customer.pointHistory.unshift({
-        id: Date.now(),
-        date: new Date().toISOString(),
-        amount: changeAmount,
-        before: originalPoints,
-        after: newPoints,
-        note: changeAmount >= 0 ? 'สะสมแต้ม' : 'ลดแต้ม/ปรับปรุง'
+  const redeemReward = async (id: number, pointsToDeduct: number) => {
+    try {
+      await $fetch('/api/customers', { 
+        method: 'PUT', 
+        body: { id, points: pointsToDeduct, action: 'redeem' } 
       })
-      
-      if (customer.pointHistory.length > 50) customer.pointHistory.pop()
-
-      customer.points = newPoints
-      saveCustomers()
-    }
-  }
-
-  const redeemReward = (id: number, threshold: number) => {
-    const customer = customers.value.find(c => c.id === id)
-    if (customer && customer.points >= threshold) {
-      const originalPoints = customer.points
-      customer.points -= threshold
-      
-      if (customer.rewardsEarned === undefined) customer.rewardsEarned = 0
-      if (!customer.rewardHistory) customer.rewardHistory = []
-      if (!customer.pointHistory) customer.pointHistory = []
-
-      customer.rewardsEarned++
-      customer.rewardHistory.unshift({
-        id: Date.now(),
-        date: new Date().toISOString(),
-        pointsExchanged: threshold
-      })
-
-      customer.pointHistory.unshift({
-        id: Date.now() + 1,
-        date: new Date().toISOString(),
-        amount: -threshold,
-        before: originalPoints,
-        after: customer.points,
-        note: 'แลกรางวัล (ครบกำหนด)'
-      })
-
-      saveCustomers()
+      await loadCustomers()
       return true
-    }
-    return false
-  }
-
-  const updateCustomer = (id: number, data: Partial<Customer>) => {
-    const index = customers.value.findIndex(c => c.id === id)
-    if (index !== -1) {
-      customers.value[index] = { ...customers.value[index], ...data }
-      saveCustomers()
+    } catch (err) {
+      console.error('Failed to redeem reward:', err)
+      return false
     }
   }
-
-  const deleteCustomer = (id: number) => {
-    customers.value = customers.value.filter(c => c.id !== id)
-    saveCustomers()
-  }
-
-  watch(customers, () => {
-    if (!isInitialLoad.value) {
-      saveCustomers()
-    }
-  }, { deep: true })
 
   onMounted(() => {
     loadCustomers()
@@ -153,11 +81,11 @@ export const useCustomers = () => {
 
   return {
     customers,
+    isLoading,
     addCustomer,
-    addPoints,
-    redeemReward,
     updateCustomer,
     deleteCustomer,
-    saveCustomers
+    redeemReward,
+    refresh: loadCustomers
   }
 }

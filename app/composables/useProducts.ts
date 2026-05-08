@@ -1,4 +1,4 @@
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 
 export interface Product {
   id: number
@@ -10,6 +10,7 @@ export interface Product {
   barcode?: string
   sku?: string
   image?: string
+  minStockThreshold?: number
 }
 
 export interface StockMovement {
@@ -22,136 +23,102 @@ export interface StockMovement {
   newStock: number
   timestamp: string
   note?: string
+  supplier?: string
+  costAtTime?: number
 }
 
 export const useProducts = () => {
   const products = ref<Product[]>([])
+  const categories = ref<string[]>([])
   const stockMovements = ref<StockMovement[]>([])
-  const categories = ref<string[]>(['เครื่องดื่ม', 'เบเกอรี่', 'ของว่าง', 'อาหารจานหลัก', 'อื่นๆ'])
-  const isInitialLoad = ref(true)
+  const isLoading = ref(false)
 
-  const loadProducts = () => {
-    if (process.client) {
-      const savedProducts = localStorage.getItem('pos_products')
-      if (savedProducts) products.value = JSON.parse(savedProducts)
-      else {
-        products.value = [
-          { id: 1, name: 'เอสเพรสโซ่ พรีเมียม', category: 'เครื่องดื่ม', cost: 25, price: 65, stock: 45, barcode: '885000000001', sku: 'COF-001' },
-          { id: 2, name: 'ชาเขียวลาเต้เย็น', category: 'เครื่องดื่ม', cost: 30, price: 75, stock: 32, barcode: '885000000002', sku: 'TEA-001' },
-          { id: 3, name: 'ครัวซองต์เนยสด', category: 'เบเกอรี่', cost: 18, price: 45, stock: 12, barcode: '885000000003', sku: 'BAK-001' },
-          { id: 4, name: 'มัฟฟินช็อกโกแลต', category: 'เบเกอรี่', cost: 22, price: 55, stock: 8, barcode: '885000000004', sku: 'BAK-002' },
-          { id: 5, name: 'แซนวิชแฮมชีส', category: 'ของว่าง', cost: 35, price: 85, stock: 4, barcode: '885000000005', sku: 'SNA-001' },
-          { id: 6, name: 'สปาเก็ตตี้คาโบนาร่า', category: 'อาหารจานหลัก', cost: 65, price: 159, stock: 15, barcode: '885000000006', sku: 'MAIN-001' },
-          { id: 7, name: 'คาราเมลมัคคิอาโต้', category: 'เครื่องดื่ม', cost: 35, price: 85, stock: 0, barcode: '885000000007', sku: 'COF-002' },
-          { id: 8, name: 'บลูเบอร์รี่ชีสเค้ก', category: 'เบเกอรี่', cost: 45, price: 110, stock: 6, barcode: '885000000008', sku: 'BAK-003' },
-          { id: 9, name: 'มันฝรั่งทอด (รสเกลือ)', category: 'ของว่าง', cost: 15, price: 35, stock: 50, barcode: '885000000009', sku: 'SNA-002' },
-          { id: 10, name: 'น้ำเปล่า 500มล.', category: 'เครื่องดื่ม', cost: 5, price: 15, stock: 120, barcode: '885000000010', sku: 'BEV-001' },
-        ]
+  const loadProducts = async () => {
+    isLoading.value = true
+    try {
+      const data = await $fetch<Product[]>('/api/products')
+      products.value = data
+      
+      const cats = await $fetch<any[]>('/api/categories')
+      categories.value = cats.map(c => c.name)
+
+      const movements = await $fetch<StockMovement[]>('/api/stock-movements')
+      stockMovements.value = movements
+    } catch (err) {
+      console.error('Failed to load products:', err)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const addProduct = async (product: Omit<Product, 'id'>) => {
+    try {
+      await $fetch('/api/products', { method: 'POST', body: product })
+      await loadProducts()
+    } catch (err) {
+      console.error('Failed to add product:', err)
+    }
+  }
+
+  const updateProduct = async (id: number, updates: Partial<Product>) => {
+    try {
+      await $fetch('/api/products', { method: 'PUT', body: { id, ...updates } })
+      await loadProducts()
+    } catch (err) {
+      console.error('Failed to update product:', err)
+    }
+  }
+
+  const deleteProduct = async (id: number) => {
+    try {
+      await $fetch(`/api/products?id=${id}`, { method: 'DELETE' })
+      await loadProducts()
+    } catch (err) {
+      console.error('Failed to delete product:', err)
+    }
+  }
+
+  const addCategory = async (name: string) => {
+    try {
+      await $fetch('/api/categories', { method: 'POST', body: { name } })
+      await loadProducts()
+    } catch (err) {
+      console.error('Failed to add category:', err)
+    }
+  }
+
+  const removeCategory = async (name: string) => {
+    try {
+      // Logic for deleting by name or getting ID first
+      const cats = await $fetch<any[]>('/api/categories')
+      const cat = cats.find(c => c.name === name)
+      if (cat) {
+        await $fetch(`/api/categories?id=${cat.id}`, { method: 'DELETE' })
+        await loadProducts()
       }
-
-      const savedMovements = localStorage.getItem('pos_stock_movements')
-      if (savedMovements) stockMovements.value = JSON.parse(savedMovements)
-      else {
-        // Initial movements for mock products
-        stockMovements.value = products.value.map(p => ({
-          id: Date.now() - Math.random() * 1000000,
-          productId: p.id,
-          productName: p.name,
-          type: 'In',
-          quantity: p.stock,
-          previousStock: 0,
-          newStock: p.stock,
-          timestamp: new Date().toISOString(),
-          note: 'ตั้งค่าสต็อกเริ่มต้น'
-        }))
-      }
-
-      isInitialLoad.value = false
+    } catch (err) {
+      console.error('Failed to remove category:', err)
     }
   }
 
-  const saveProducts = () => {
-    if (process.client) {
-      localStorage.setItem('pos_products', JSON.stringify(products.value))
-      localStorage.setItem('pos_stock_movements', JSON.stringify(stockMovements.value))
-    }
-  }
-
-  const addMovement = (movement: Omit<StockMovement, 'id' | 'timestamp'>) => {
-    stockMovements.value.push({
-      ...movement,
-      id: Date.now(),
-      timestamp: new Date().toISOString()
-    })
-  }
-
-  const addProduct = (product: Omit<Product, 'id'>) => {
-    const newProduct: Product = { ...product, id: Date.now() }
-    products.value.push(newProduct)
-    addMovement({
-      productId: newProduct.id,
-      productName: newProduct.name,
-      type: 'In',
-      quantity: newProduct.stock,
-      previousStock: 0,
-      newStock: newProduct.stock,
-      note: 'เพิ่มสินค้าใหม่'
-    })
-    saveProducts()
-  }
-
-  const updateProduct = (id: number, updates: Partial<Product>) => {
-    const index = products.value.findIndex(p => p.id === id)
-    if (index !== -1) {
-      products.value[index] = { ...products.value[index], ...updates }
-      saveProducts()
-    }
-  }
-
-  const deleteProduct = (id: number) => {
-    products.value = products.value.filter(p => p.id !== id)
-    saveProducts()
-  }
-
-  const deductStock = (productId: number, quantity: number, type: 'Sale' | 'Adjustment' = 'Sale') => {
+  const addStock = async (productId: number, quantity: number, note: string = 'เติมสต็อกสินค้า', supplier?: string, newCost?: number) => {
+    // In DB mode, we update the product directly
     const product = products.value.find(p => p.id === productId)
     if (product) {
-      const prev = product.stock
-      product.stock = Math.max(0, product.stock - quantity)
-      addMovement({
-        productId,
-        productName: product.name,
-        type,
-        quantity: -quantity,
-        previousStock: prev,
-        newStock: product.stock,
-        note: type === 'Sale' ? 'รายการขายหน้าร้าน' : 'ปรับปรุงสต็อกสินค้า'
-      })
-      saveProducts()
+      const updates: any = { 
+        stock: product.stock + quantity,
+        note,
+        supplier
+      }
+      if (newCost !== undefined) updates.cost = newCost
+      
+      await updateProduct(productId, updates)
     }
   }
 
-  const addStock = (productId: number, quantity: number) => {
-    const product = products.value.find(p => p.id === productId)
-    if (product) {
-      const prev = product.stock
-      product.stock += quantity
-      addMovement({
-        productId,
-        productName: product.name,
-        type: 'In',
-        quantity,
-        previousStock: prev,
-        newStock: product.stock,
-        note: 'เติมสต็อกสินค้า'
-      })
-      saveProducts()
-    }
+  const stockIn = (productId: number, quantity: number, supplier: string, cost: number, note: string = '') => {
+    addStock(productId, quantity, note || `รับสินค้าจาก ${supplier}`, supplier, cost)
   }
-
-  watch(products, () => {
-    if (!isInitialLoad.value) saveProducts()
-  }, { deep: true })
 
   onMounted(() => {
     loadProducts()
@@ -159,12 +126,16 @@ export const useProducts = () => {
 
   return {
     products,
-    stockMovements,
     categories,
+    stockMovements,
+    isLoading,
     addProduct,
     updateProduct,
     deleteProduct,
-    deductStock,
-    addStock
+    addCategory,
+    removeCategory,
+    addStock,
+    stockIn,
+    refresh: loadProducts
   }
 }

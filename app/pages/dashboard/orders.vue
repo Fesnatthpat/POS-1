@@ -3,7 +3,7 @@ import { useOrders } from '~/composables/useOrders'
 import { useCustomers } from '~/composables/useCustomers'
 import { useSettings } from '~/composables/useSettings'
 
-const { orders } = useOrders()
+const { orders, voidOrder } = useOrders()
 const { customers } = useCustomers()
 const { settings } = useSettings()
 
@@ -14,15 +14,19 @@ definePageMeta({
 
 // --- State ---
 const searchQuery = ref('')
+const selectedDate = ref(new Date().toISOString().split('T')[0])
 const isReceiptModalOpen = ref(false)
 const selectedOrder = ref<any>(null)
 
 // --- Computed ---
 const filteredOrders = computed(() => {
-  return orders.value.filter(o => 
-    o.id.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    o.paymentMethod.toLowerCase().includes(searchQuery.value.toLowerCase())
-  ).slice().reverse()
+  return orders.value.filter(o => {
+    const matchesSearch = o.id.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                         (o.notes && o.notes.toLowerCase().includes(searchQuery.value.toLowerCase()))
+    
+    const matchesDate = new Date(o.timestamp).toDateString() === new Date(selectedDate.value).toDateString()
+    return matchesSearch && matchesDate
+  }).slice().reverse()
 })
 
 const getCustomerName = (id?: number) => {
@@ -47,6 +51,13 @@ const viewReceipt = (order: any) => {
   selectedOrder.value = order
   isReceiptModalOpen.value = true
 }
+
+const handleVoidOrder = (orderId: string) => {
+  if (confirm('คุณต้องการยกเลิกคำสั่งซื้อนี้ใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้')) {
+    voidOrder(orderId)
+    isReceiptModalOpen.value = false
+  }
+}
 </script>
 
 <template>
@@ -57,17 +68,22 @@ const viewReceipt = (order: any) => {
         <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">ดูและจัดการรายการย้อนหลังทั้งหมด</p>
       </div>
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <div class="relative">
+        <div class="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-100 shadow-sm">
+          <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">วันที่:</span>
+          <input type="date" v-model="selectedDate" 
+            class="bg-slate-50 border-none rounded-lg px-2 py-1.5 font-bold text-slate-900 focus:ring-0 text-xs" />
+        </div>
+        <div class="relative flex-1 sm:flex-none">
           <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </span>
-          <input type="text" v-model="searchQuery" placeholder="ค้นหารหัสคำสั่งซื้อ..." 
-            class="pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 w-full sm:w-64 transition-all" />
+          <input type="text" v-model="searchQuery" placeholder="ค้นหารหัส..." 
+            class="pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 w-full sm:w-48 transition-all" />
         </div>
-        <NuxtLink to="/dashboard/pos" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2">
-           <span>สร้างคำสั่งซื้อใหม่</span>
+        <NuxtLink to="/dashboard/pos" class="bg-indigo-600 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 text-xs text-center">
+           <span>สร้างคำสั่งซื้อ</span>
         </NuxtLink>
       </div>
     </div>
@@ -77,20 +93,23 @@ const viewReceipt = (order: any) => {
         <table class="w-full text-left border-collapse min-w-[800px] lg:min-w-0">
           <thead>
             <tr class="bg-slate-50/50 border-b border-slate-100">
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">รหัสคำสั่งซื้อ</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">รหัสอ้างอิง</th>
               <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">ลูกค้า</th>
               <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">วันที่และเวลา</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">การชำระเงิน</th>
-              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">ยอดรวม</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">สถานะ</th>
+              <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">ยอดรวม</th>
               <th class="px-6 lg:px-8 py-4 lg:py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">การดำเนินการ</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-50">
             <tr v-if="filteredOrders.length === 0">
-               <td colspan="6" class="px-8 py-10 text-center text-slate-400 font-bold">ไม่พบรายการคำสั่งซื้อ</td>
+               <td colspan="6" class="px-8 py-10 text-center text-slate-400 font-bold">ไม่พบรายการคำสั่งซื้อในวันที่เลือก</td>
             </tr>
-            <tr v-for="order in filteredOrders" :key="order.id" class="hover:bg-slate-50/50 transition-colors group">
-              <td class="px-6 lg:px-8 py-4 lg:py-5 font-bold text-indigo-600 text-xs lg:text-sm">{{ order.id }}</td>
+            <tr v-for="order in filteredOrders" :key="order.id" class="hover:bg-slate-50/50 transition-colors group" :class="{ 'opacity-50 grayscale': order.status === 'voided' }">
+              <td class="px-6 lg:px-8 py-4 lg:py-5">
+                 <p class="font-bold text-slate-900 text-xs lg:text-sm">{{ order.id }}</p>
+                 <span class="text-[9px] font-black uppercase text-slate-400">{{ order.paymentMethod }}</span>
+              </td>
               <td class="px-6 lg:px-8 py-4 lg:py-5">
                  <div class="flex items-center gap-2">
                     <div class="w-7 h-7 lg:w-8 lg:h-8 bg-slate-100 rounded-full flex items-center justify-center text-[10px] lg:text-xs text-slate-500 font-bold flex-shrink-0">
@@ -100,18 +119,18 @@ const viewReceipt = (order: any) => {
                  </div>
               </td>
               <td class="px-6 lg:px-8 py-4 lg:py-5 text-xs lg:text-sm text-slate-600 font-medium">{{ formatDate(order.timestamp) }}</td>
-              <td class="px-6 lg:px-8 py-4 lg:py-5">
-                <span class="px-2 lg:px-3 py-1 bg-slate-100 rounded-full text-[9px] lg:text-[10px] font-black uppercase text-slate-600 whitespace-nowrap">
-                  {{ order.paymentMethod === 'cash' ? 'เงินสด' : order.paymentMethod === 'qr' ? 'คิวอาร์โค้ด' : 'โอนเงิน' }}
+              <td class="px-6 lg:px-8 py-4 lg:py-5 text-center">
+                <span class="px-2 lg:px-3 py-1 rounded-full text-[9px] lg:text-[10px] font-black uppercase whitespace-nowrap"
+                  :class="order.status === 'voided' ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'">
+                  {{ order.status === 'voided' ? 'ยกเลิกแล้ว' : 'สำเร็จ' }}
                 </span>
               </td>
-              <td class="px-6 lg:px-8 py-4 lg:py-5 text-xs lg:text-sm text-slate-900 font-black">{{ formatCurrency(order.total) }}</td>
+              <td class="px-6 lg:px-8 py-4 lg:py-5 text-right font-black text-slate-900 text-xs lg:text-sm" :class="{ 'line-through text-slate-400': order.status === 'voided' }">
+                {{ formatCurrency(order.total) }}
+              </td>
               <td class="px-6 lg:px-8 py-4 lg:py-5 text-right">
-                <button @click="viewReceipt(order)" class="text-slate-400 hover:text-indigo-600 transition-colors p-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
+                <button @click="viewReceipt(order)" class="text-slate-400 hover:text-indigo-600 transition-colors p-2 bg-slate-50 rounded-xl text-xs font-bold">
+                  รายละเอียด
                 </button>
               </td>
             </tr>
@@ -120,17 +139,22 @@ const viewReceipt = (order: any) => {
       </div>
     </div>
 
-    <!-- Receipt Modal (Built-in Responsive) -->
+    <!-- Receipt Modal -->
     <div v-if="isReceiptModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-2 lg:p-4 bg-slate-900/40 backdrop-blur-sm">
-      <div class="bg-white rounded-[2rem] lg:rounded-[32px] shadow-2xl w-full max-w-sm overflow-hidden flex flex-col max-h-[95vh]">
-        <div class="p-6 lg:p-8 text-center border-b border-dashed border-slate-200 flex-shrink-0">
+      <div class="bg-white rounded-[2rem] lg:rounded-[32px] shadow-2xl w-full max-w-sm overflow-hidden flex flex-col max-h-[95vh] animate-in fade-in zoom-in-95 duration-200">
+        <div class="p-6 lg:p-8 text-center border-b border-dashed border-slate-200 flex-shrink-0 relative">
+           <button @click="isReceiptModalOpen = false" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+           </button>
            <div class="w-14 h-14 lg:w-16 lg:h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl lg:text-2xl">📋</div>
-           <h3 class="text-xl lg:text-2xl font-black text-slate-900">ใบเสร็จรับเงิน</h3>
-           <p class="text-slate-400 font-bold uppercase tracking-widest text-[9px] lg:text-[10px] mt-1">ประวัติการทำรายการ</p>
+           <h3 class="text-xl lg:text-2xl font-black text-slate-900" :class="{ 'text-rose-600': selectedOrder?.status === 'voided' }">
+              {{ selectedOrder?.status === 'voided' ? 'บิลถูกยกเลิก' : 'ใบเสร็จรับเงิน' }}
+           </h3>
+           <p class="text-slate-400 font-bold uppercase tracking-widest text-[9px] lg:text-[10px] mt-1">{{ selectedOrder?.id }}</p>
         </div>
         
-        <div class="flex-1 overflow-y-auto p-6 lg:p-8 bg-slate-50/50">
-          <div class="space-y-4 font-mono text-[10px] lg:text-xs border-b border-dashed border-slate-300 pb-4 lg:pb-6 mb-4 lg:mb-6">
+        <div class="flex-1 overflow-y-auto p-6 lg:p-8 bg-slate-50/50 custom-scrollbar">
+           <div class="space-y-4 font-mono text-[10px] lg:text-xs border-b border-dashed border-slate-300 pb-4 lg:pb-6 mb-4 lg:mb-6" id="printable-receipt">
             <div class="text-center font-bold mb-4">
                <p class="text-base lg:text-lg">{{ settings.name }}</p>
                <p>{{ settings.address }}</p>
@@ -166,25 +190,12 @@ const viewReceipt = (order: any) => {
               <span>ยอดรวมทั้งสิ้น:</span>
               <span>{{ formatCurrency(selectedOrder?.total) }}</span>
             </div>
-            <div class="flex justify-between pt-4 uppercase text-[9px] font-black">
-               <span>วิธีชำระ: {{ selectedOrder?.paymentMethod === 'cash' ? 'เงินสด' : selectedOrder?.paymentMethod === 'qr' ? 'คิวอาร์โค้ด' : 'โอนเงิน' }}</span>
+            <div v-if="selectedOrder?.status === 'voided'" class="mt-4 p-2 bg-rose-100 text-rose-700 text-center rounded font-black uppercase text-[10px]">
+               ยกเลิกเมื่อ: {{ formatDate(selectedOrder.voidedAt) }}
             </div>
-            <div v-if="selectedOrder?.paymentMethod === 'cash'" class="flex justify-between">
-               <span>รับเงินมา:</span>
-               <span>{{ formatCurrency(selectedOrder?.receivedAmount) }}</span>
-            </div>
-            <div v-if="selectedOrder?.paymentMethod === 'cash'" class="flex justify-between font-bold">
-               <span>เงินทอน:</span>
-               <span>{{ formatCurrency(selectedOrder?.changeDue) }}</span>
-            </div>
-            <div v-if="selectedOrder?.notes" class="mt-3 pt-3 border-t border-dashed border-slate-300 text-[9px] text-slate-500">
-               <p class="font-bold uppercase mb-1">หมายเหตุ:</p>
-               <p>{{ selectedOrder.notes }}</p>
-            </div>
-          </div>
-          
-          <!-- Payment Slip Evidence -->
-          <div v-if="selectedOrder?.paymentSlip" class="mb-6">
+           </div>
+
+           <div v-if="selectedOrder?.paymentSlip" class="mb-6">
              <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 text-center">หลักฐานการชำระเงิน</p>
              <div class="rounded-xl overflow-hidden border border-slate-200 shadow-sm">
                 <img :src="selectedOrder.paymentSlip" class="w-full h-auto" />
@@ -196,9 +207,13 @@ const viewReceipt = (order: any) => {
           </div>
         </div>
 
-        <div class="p-6 lg:p-8 grid grid-cols-2 gap-3 lg:gap-4 flex-shrink-0">
-           <button @click="isReceiptModalOpen = false" class="py-3 lg:py-4 bg-slate-100 text-slate-600 rounded-xl lg:rounded-2xl font-black text-sm lg:text-base">ปิด</button>
-           <button @click="window.print()" class="py-3 lg:py-4 bg-indigo-600 text-white rounded-xl lg:rounded-2xl font-black shadow-lg shadow-indigo-100 text-sm lg:text-base">พิมพ์</button>
+        <div class="p-6 lg:p-8 bg-white border-t border-slate-100 flex-shrink-0">
+           <div class="grid grid-cols-2 gap-3 mb-4">
+              <button @click="window.print()" class="py-3 bg-slate-900 text-white rounded-xl font-black text-xs">พิมพ์ใบเสร็จ</button>
+              <button v-if="selectedOrder?.status !== 'voided'" @click="handleVoidOrder(selectedOrder.id)" 
+                class="py-3 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl font-black text-xs hover:bg-rose-100 transition-all">ยกเลิกบิลนี้</button>
+           </div>
+           <button @click="isReceiptModalOpen = false" class="w-full py-3 bg-slate-100 text-slate-500 rounded-xl font-black text-xs">ปิดหน้าต่าง</button>
         </div>
       </div>
     </div>

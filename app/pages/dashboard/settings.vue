@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useSettings, type StoreSettings } from '~/composables/useSettings'
 
-const { settings, saveSettings } = useSettings()
+const { settings, saveSettings, exportBackup, importBackup } = useSettings()
 
 definePageMeta({
   layout: 'dashboard',
@@ -11,189 +11,161 @@ definePageMeta({
 // --- State ---
 const form = ref<StoreSettings>({ ...settings.value })
 const isSaving = ref(false)
-const showSuccess = ref(false)
+const fileInput = ref<HTMLInputElement | null>(null)
 
-// Watch for initial load of settings from composable
-watch(settings, (newVal) => {
-  form.value = { ...newVal }
-}, { immediate: true })
-
+// --- Actions ---
 const handleSave = async () => {
   isSaving.value = true
-  saveSettings(form.value)
-  
-  // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 800))
-  
+  saveSettings(form.value)
   isSaving.value = false
-  showSuccess.value = true
-  setTimeout(() => showSuccess.value = false, 3000)
+  alert('บันทึกการตั้งค่าสำเร็จ')
+}
+
+const triggerImport = () => {
+  fileInput.value?.click()
+}
+
+const handleImport = (event: any) => {
+  const file = event.target.files[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const content = e.target?.result as string
+      if (confirm('การคืนค่าข้อมูลจะทับข้อมูลปัจจุบันทั้งหมดและเริ่มระบบใหม่ คุณแน่ใจใช่หรือไม่?')) {
+        const success = importBackup(content)
+        if (!success) alert('เกิดข้อผิดพลาด: ไฟล์สำรองข้อมูลไม่ถูกต้อง')
+      }
+    }
+    reader.readAsText(file)
+  }
 }
 </script>
 
 <template>
-  <div class="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
-    <div class="mb-8 lg:mb-10">
-      <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">การตั้งค่า</h1>
-      <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">ตั้งค่าโปรไฟล์ร้านค้าและค่าเริ่มต้นสำหรับการใช้งาน</p>
+  <div class="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-10">
+    <div>
+      <h1 class="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">การตั้งค่าร้านค้า</h1>
+      <p class="text-slate-500 font-medium text-xs lg:text-sm mt-1">จัดการโปรไฟล์ร้าน ระบบภาษี และการสำรองข้อมูล</p>
     </div>
 
-    <div class="space-y-8 lg:space-y-12">
-      <!-- Store Profile -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8">
-        <div class="md:col-span-1">
-          <h3 class="text-lg font-bold text-slate-900 mb-1 lg:mb-2">โปรไฟล์ร้านค้า</h3>
-          <p class="text-xs lg:text-sm text-slate-500">ข้อมูลร้านค้าที่จะแสดงบนใบเสร็จ</p>
-        </div>
-        
-        <div class="md:col-span-2 space-y-4 lg:space-y-6">
-          <div class="bg-white p-6 lg:p-8 rounded-[1.5rem] lg:rounded-[2rem] border border-slate-100 shadow-sm space-y-4 lg:space-y-6">
-            <div>
-              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">ชื่อร้านค้า</label>
-              <input type="text" v-model="form.name" 
-                class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm" />
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-               <div>
-                  <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">เบอร์โทรศัพท์</label>
-                  <input type="text" v-model="form.phone" 
-                    class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm" />
-               </div>
-               <div>
-                  <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">สกุลเงิน</label>
-                  <select v-model="form.currency" 
-                    class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm">
-                    <option value="THB">THB (฿)</option>
-                    <option value="USD">USD ($)</option>
-                    <option value="EUR">EUR (€)</option>
-                  </select>
-               </div>
-            </div>
-
-            <div>
-              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">ที่อยู่ร้านค้า</label>
-              <textarea v-model="form.address" rows="3"
-                class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm"></textarea>
-            </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+       <!-- Left: Form -->
+       <div class="lg:col-span-2 space-y-8">
+          <!-- Store Profile -->
+          <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6">
+             <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-xl">🏪</div>
+                <h3 class="text-xl font-black text-slate-900">โปรไฟล์ร้านค้า</h3>
+             </div>
+             
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                   <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">ชื่อร้านค้า</label>
+                   <input type="text" v-model="form.name" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <div class="space-y-2">
+                   <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">เบอร์โทรศัพท์</label>
+                   <input type="tel" v-model="form.phone" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <div class="md:col-span-2 space-y-2">
+                   <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">ที่อยู่ร้านค้า</label>
+                   <textarea v-model="form.address" rows="3" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500"></textarea>
+                </div>
+             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Tax & Compliance -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8 border-t border-slate-100 pt-8 lg:pt-12">
-        <div class="md:col-span-1">
-          <h3 class="text-lg font-bold text-slate-900 mb-1 lg:mb-2">ภาษีและการเรียกเก็บเงิน</h3>
-          <p class="text-xs lg:text-sm text-slate-500">จัดการการคำนวณภาษีมูลค่าเพิ่ม</p>
-        </div>
-
-        <div class="md:col-span-2 space-y-4 lg:space-y-6">
-          <div class="bg-white p-6 lg:p-8 rounded-[1.5rem] lg:rounded-[2rem] border border-slate-100 shadow-sm space-y-4 lg:space-y-6">
-            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
-               <div class="min-w-0 pr-4">
-                  <p class="font-bold text-slate-900 text-sm lg:text-base">ราคารวมภาษีแล้ว</p>
-                  <p class="text-[9px] lg:text-[10px] text-slate-400 font-bold uppercase truncate">แสดงราคาที่รวม VAT แล้ว</p>
-               </div>
-               <button @click="form.includeTax = !form.includeTax" 
-                 class="w-12 h-6 rounded-full transition-colors relative flex-shrink-0"
-                 :class="form.includeTax ? 'bg-indigo-600' : 'bg-slate-300'">
-                 <div class="absolute top-1 w-4 h-4 bg-white rounded-full transition-all"
-                   :class="form.includeTax ? 'right-1' : 'left-1'"></div>
-               </button>
-            </div>
-
-            <div>
-              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">อัตราภาษี (%)</label>
-              <input type="number" v-model="form.taxRate" 
-                class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm" />
-            </div>
+          <!-- Tax & Currency -->
+          <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6">
+             <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl">🧾</div>
+                <h3 class="text-xl font-black text-slate-900">ระบบภาษีและสกุลเงิน</h3>
+             </div>
+             
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                   <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">การคำนวณภาษี</label>
+                   <div class="flex items-center gap-4">
+                      <button type="button" @click="form.includeTax = true" 
+                        class="flex-1 py-4 rounded-2xl border-2 font-bold text-sm transition-all"
+                        :class="form.includeTax ? 'border-indigo-600 bg-indigo-50 text-indigo-600' : 'border-slate-100 text-slate-400'">ราคารวมภาษีแล้ว</button>
+                      <button type="button" @click="form.includeTax = false" 
+                        class="flex-1 py-4 rounded-2xl border-2 font-bold text-sm transition-all"
+                        :class="!form.includeTax ? 'border-indigo-600 bg-indigo-50 text-indigo-600' : 'border-slate-100 text-slate-400'">แยกภาษีต่างหาก</button>
+                   </div>
+                </div>
+                <div class="space-y-4">
+                   <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">อัตราภาษี (%)</label>
+                   <input type="number" v-model="form.taxRate" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl font-black text-lg focus:ring-2 focus:ring-indigo-500" />
+                </div>
+             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Receipt Note -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8 border-t border-slate-100 pt-8 lg:pt-12">
-        <div class="md:col-span-1">
-          <h3 class="text-lg font-bold text-slate-900 mb-1 lg:mb-2">ข้อความท้ายใบเสร็จ</h3>
-          <p class="text-xs lg:text-sm text-slate-500">ข้อความที่จะแสดงที่ส่วนท้ายของใบเสร็จ</p>
-        </div>
+          <!-- Loyalty Points -->
+          <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6">
+             <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-xl">⭐</div>
+                <h3 class="text-xl font-black text-slate-900">ระบบสมาชิกและแต้มสะสม</h3>
+             </div>
+             
+             <div class="space-y-4">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">รูปแบบการสะสมแต้ม</label>
+                <div class="flex items-center gap-4">
+                   <button type="button" @click="form.loyaltyPointType = 'amount'" 
+                     class="flex-1 py-4 rounded-2xl border-2 font-bold text-sm transition-all"
+                     :class="form.loyaltyPointType === 'amount' ? 'border-indigo-600 bg-indigo-50 text-indigo-600' : 'border-slate-100 text-slate-400'">ตามยอดซื้อ (฿)</button>
+                   <button type="button" @click="form.loyaltyPointType = 'item'" 
+                     class="flex-1 py-4 rounded-2xl border-2 font-bold text-sm transition-all"
+                     :class="form.loyaltyPointType === 'item' ? 'border-indigo-600 bg-indigo-50 text-indigo-600' : 'border-slate-100 text-slate-400'">ตามจำนวนชิ้น</button>
+                </div>
+             </div>
 
-        <div class="md:col-span-2">
-          <div class="bg-white p-6 lg:p-8 rounded-[1.5rem] lg:rounded-[2rem] border border-slate-100 shadow-sm">
-             <textarea v-model="form.receiptNote" rows="2"
-               class="w-full px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm"
-               placeholder="ขอบคุณที่ใช้บริการ"></textarea>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                   <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      {{ form.loyaltyPointType === 'amount' ? 'จำนวนเงินต่อ 1 แต้ม (฿)' : 'จำนวนแต้มต่อสินค้า 1 ชิ้น' }}
+                   </label>
+                   <input type="number" v-model="form.loyaltyPointRate" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <div class="space-y-2">
+                   <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">แต้มขั้นต่ำเพื่อแลกรางวัล</label>
+                   <input type="number" v-model="form.loyaltyPointThreshold" class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500" />
+                </div>
+             </div>
           </div>
-        </div>
-      </div>
+       </div>
 
-      <!-- Loyalty Settings -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8 border-t border-slate-100 pt-8 lg:pt-12">
-        <div class="md:col-span-1">
-          <h3 class="text-lg font-bold text-slate-900 mb-1 lg:mb-2">ระบบสะสมแต้ม</h3>
-          <p class="text-xs lg:text-sm text-slate-500">ตั้งค่าเกณฑ์การคำนวณคะแนนสำหรับสมาชิก</p>
-        </div>
-
-        <div class="md:col-span-2 space-y-4 lg:space-y-6">
-          <div class="bg-white p-6 lg:p-8 rounded-[1.5rem] lg:rounded-[2rem] border border-slate-100 shadow-sm space-y-6">
-            <div>
-              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">เกณฑ์การให้คะแนน</label>
-              <div class="grid grid-cols-2 gap-4">
-                <button @click="form.loyaltyPointType = 'amount'"
-                  class="flex flex-col items-center justify-center p-6 rounded-3xl border-2 transition-all"
-                  :class="[ form.loyaltyPointType === 'amount' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 hover:bg-slate-50' ]">
-                  <span class="text-2xl mb-2">💰</span>
-                  <span class="font-black text-[10px] uppercase tracking-widest">ตามยอดซื้อ</span>
+       <!-- Right: Sidebar -->
+       <div class="space-y-8">
+          <!-- System Management -->
+          <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white space-y-6 shadow-xl">
+             <h3 class="text-lg font-black uppercase tracking-[0.2em] text-indigo-400">System Backup</h3>
+             <p class="text-xs text-slate-400 leading-relaxed">เนื่องจากข้อมูลถูกเก็บไว้ในเบราว์เซอร์ (Local Storage) การล้างแคชอาจทำให้ข้อมูลหายได้ ควรสำรองข้อมูลไว้อย่างสม่ำเสมอ</p>
+             
+             <div class="space-y-3 pt-2">
+                <button @click="exportBackup" class="w-full py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-2">
+                   <span>📥 สำรองข้อมูล (JSON)</span>
                 </button>
-                <button @click="form.loyaltyPointType = 'item'"
-                  class="flex flex-col items-center justify-center p-6 rounded-3xl border-2 transition-all"
-                  :class="[ form.loyaltyPointType === 'item' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 hover:bg-slate-50' ]">
-                  <span class="text-2xl mb-2">📦</span>
-                  <span class="font-black text-[10px] uppercase tracking-widest">ตามจำนวนชิ้น</span>
+                <button @click="triggerImport" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-900/50">
+                   <span>📤 คืนค่าข้อมูล</span>
                 </button>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-                {{ form.loyaltyPointType === 'amount' ? 'ยอดซื้อทุกๆ (฿)' : 'คะแนนต่อสินค้า 1 ชิ้น' }}
-              </label>
-              <div class="flex items-center gap-4">
-                <input type="number" v-model="form.loyaltyPointRate" 
-                  class="flex-1 px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm font-black" />
-                <span class="font-bold text-slate-500 text-sm">
-                  {{ form.loyaltyPointType === 'amount' ? 'ได้รับ 1 แต้ม' : 'แต้ม' }}
-                </span>
-              </div>
-              <p class="mt-2 text-[10px] text-slate-400 font-medium italic">
-                * เช่น {{ form.loyaltyPointType === 'amount' ? 'ซื้อครบ ' + form.loyaltyPointRate + ' บาท รับ 1 แต้ม' : 'ซื้อ 1 ชิ้น รับ ' + form.loyaltyPointRate + ' แต้ม' }}
-              </p>
-            </div>
-
-            <div class="pt-4 border-t border-slate-100">
-              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">เป้าหมายแต้มสะสม (สีเขียว)</label>
-              <div class="flex items-center gap-4">
-                <input type="number" v-model="form.loyaltyPointThreshold" 
-                  class="flex-1 px-4 py-3 lg:px-5 lg:py-4 bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl focus:ring-2 focus:ring-indigo-500 text-sm font-black text-emerald-600" />
-                <span class="font-bold text-slate-500 text-sm">แต้ม</span>
-              </div>
-              <p class="mt-2 text-[10px] text-slate-400 font-medium italic">
-                * เมื่อลูกค้ามีแต้มถึงเกณฑ์นี้ ตัวเลขแต้มจะแสดงเป็นสีเขียว
-              </p>
-            </div>
+                <input type="file" ref="fileInput" accept=".json" class="hidden" @change="handleImport" />
+             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Save Bar -->
-    <div class="mt-12 flex flex-col sm:flex-row items-center justify-end gap-4 border-t border-slate-100 pt-8">
-      <p v-if="showSuccess" class="text-emerald-600 font-bold text-xs lg:text-sm animate-bounce order-2 sm:order-1">✓ บันทึกสำเร็จ!</p>
-      <button @click="handleSave" :disabled="isSaving"
-        class="w-full sm:w-auto px-10 py-4 bg-indigo-600 text-white rounded-xl lg:rounded-2xl font-black shadow-xl shadow-indigo-100 hover:bg-indigo-700 disabled:opacity-50 transition-all flex items-center justify-center gap-2 order-1 sm:order-2">
-        <span v-if="isSaving" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-        {{ isSaving ? 'กำลังบันทึก...' : 'บันทึกการเปลี่ยนแปลง' }}
-      </button>
+          <!-- Receipt Note -->
+          <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-4">
+             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">ข้อความท้ายใบเสร็จ</label>
+             <textarea v-model="form.receiptNote" rows="4" class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-medium text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="เช่น ขอบคุณที่ใช้บริการ..."></textarea>
+          </div>
+
+          <!-- Save Button -->
+          <button @click="handleSave" :disabled="isSaving"
+            class="w-full py-6 bg-indigo-600 text-white rounded-[2rem] font-black text-lg shadow-2xl shadow-indigo-900/20 hover:bg-indigo-700 disabled:opacity-50 transition-all flex items-center justify-center gap-3">
+            <span v-if="isSaving" class="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></span>
+            {{ isSaving ? 'กำลังบันทึก...' : 'บันทึกการเปลี่ยนแปลง' }}
+          </button>
+       </div>
     </div>
   </div>
 </template>

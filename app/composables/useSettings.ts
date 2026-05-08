@@ -2,46 +2,50 @@ import { ref, onMounted } from 'vue'
 
 export interface StoreSettings {
   name: string
-  logo: string
   address: string
   phone: string
+  currency: string
   taxRate: number
   includeTax: boolean
-  currency: string
   receiptNote: string
-  loyaltyPointType: 'amount' | 'item'
+  loyaltyPointType: string
   loyaltyPointRate: number
   loyaltyPointThreshold: number
 }
 
 export const useSettings = () => {
   const settings = ref<StoreSettings>({
-    name: 'เวนโดร่า (Vendora)',
-    logo: '',
-    address: '123 ถนนเทคโนโลยี แขวงดิจิทัล เขตไอที กรุงเทพมหานคร',
-    phone: '02-123-4567',
+    name: 'Vendora Coffee & Bistro',
+    address: '',
+    phone: '',
+    currency: 'THB',
     taxRate: 7,
     includeTax: true,
-    currency: 'THB',
-    receiptNote: 'ขอบคุณที่ใช้บริการ!',
+    receiptNote: '',
     loyaltyPointType: 'amount',
     loyaltyPointRate: 20,
-    loyaltyPointThreshold: 10
+    loyaltyPointThreshold: 100
   })
+  const isLoading = ref(false)
 
-  const loadSettings = () => {
-    if (process.client) {
-      const saved = localStorage.getItem('pos_settings')
-      if (saved) {
-        settings.value = JSON.parse(saved)
-      }
+  const loadSettings = async () => {
+    isLoading.value = true
+    try {
+      const data = await $fetch<StoreSettings>('/api/settings')
+      if (data) settings.value = data
+    } catch (err) {
+      console.error('Failed to load settings:', err)
+    } finally {
+      isLoading.value = false
     }
   }
 
-  const saveSettings = (newSettings: StoreSettings) => {
-    settings.value = { ...newSettings }
-    if (process.client) {
-      localStorage.setItem('pos_settings', JSON.stringify(settings.value))
+  const saveSettings = async (newSettings: StoreSettings) => {
+    try {
+      await $fetch('/api/settings', { method: 'POST', body: newSettings })
+      await loadSettings()
+    } catch (err) {
+      console.error('Failed to save settings:', err)
     }
   }
 
@@ -51,6 +55,8 @@ export const useSettings = () => {
 
   return {
     settings,
-    saveSettings
+    isLoading,
+    saveSettings,
+    refresh: loadSettings
   }
 }

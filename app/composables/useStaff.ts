@@ -1,68 +1,56 @@
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 
 export interface Staff {
   id: number
   name: string
   username: string
-  role: 'Admin' | 'Cashier'
+  password?: string
+  role: string
   joinDate: string
-  status: 'Active' | 'Inactive'
+  status: string
 }
 
 export const useStaff = () => {
   const staffMembers = ref<Staff[]>([])
-  const isInitialLoad = ref(true)
+  const isLoading = ref(false)
 
-  const loadStaff = () => {
-    if (process.client) {
-      const saved = localStorage.getItem('pos_staff')
-      if (saved) {
-        staffMembers.value = JSON.parse(saved)
-      } else {
-        staffMembers.value = [
-          { id: 1, name: 'ผู้ดูแลระบบ', username: 'admin', role: 'Admin', joinDate: '2025-01-01', status: 'Active' },
-          { id: 2, name: 'สมชาย ใจดี', username: 'cashier1', role: 'Cashier', joinDate: '2025-03-01', status: 'Active' }
-        ]
-      }
-      isInitialLoad.value = false
+  const loadStaff = async () => {
+    isLoading.value = true
+    try {
+      staffMembers.value = await $fetch<Staff[]>('/api/staff')
+    } catch (err) {
+      console.error('Failed to load staff:', err)
+    } finally {
+      isLoading.value = false
     }
   }
 
-  const saveStaff = () => {
-    if (process.client) {
-      localStorage.setItem('pos_staff', JSON.stringify(staffMembers.value))
+  const addStaff = async (staff: any) => {
+    try {
+      await $fetch('/api/staff', { method: 'POST', body: staff })
+      await loadStaff()
+    } catch (err) {
+      console.error('Failed to add staff:', err)
     }
   }
 
-  const addStaff = (staff: Omit<Staff, 'id' | 'joinDate' | 'status'>) => {
-    const newStaff: Staff = {
-      ...staff,
-      id: Date.now(),
-      joinDate: new Date().toISOString().split('T')[0],
-      status: 'Active'
-    }
-    staffMembers.value.push(newStaff)
-    saveStaff()
-  }
-
-  const updateStaff = (id: number, updates: Partial<Staff>) => {
-    const index = staffMembers.value.findIndex(s => s.id === id)
-    if (index !== -1) {
-      staffMembers.value[index] = { ...staffMembers.value[index], ...updates }
-      saveStaff()
+  const updateStaff = async (id: number, updates: Partial<Staff>) => {
+    try {
+      await $fetch('/api/staff', { method: 'PUT', body: { id, ...updates } })
+      await loadStaff()
+    } catch (err) {
+      console.error('Failed to update staff:', err)
     }
   }
 
-  const deleteStaff = (id: number) => {
-    staffMembers.value = staffMembers.value.filter(s => s.id !== id)
-    saveStaff()
-  }
-
-  watch(staffMembers, () => {
-    if (!isInitialLoad.value) {
-      saveStaff()
+  const deleteStaff = async (id: number) => {
+    try {
+      await $fetch(`/api/staff?id=${id}`, { method: 'DELETE' })
+      await loadStaff()
+    } catch (err) {
+      console.error('Failed to delete staff:', err)
     }
-  }, { deep: true })
+  }
 
   onMounted(() => {
     loadStaff()
@@ -70,8 +58,10 @@ export const useStaff = () => {
 
   return {
     staffMembers,
+    isLoading,
     addStaff,
     updateStaff,
-    deleteStaff
+    deleteStaff,
+    refresh: loadStaff
   }
 }
