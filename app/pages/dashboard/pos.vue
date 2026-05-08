@@ -4,6 +4,7 @@ import { useProducts } from '~/composables/useProducts'
 import { useOrders } from '~/composables/useOrders'
 import { useSettings } from '~/composables/useSettings'
 import { useFeatures } from '~/composables/useFeatures'
+import { compressAndUpload } from '~/utils/storage'
 
 const { customers } = useCustomers()
 const { products } = useProducts()
@@ -43,6 +44,7 @@ const isCartOpenMobile = ref(false)
 const paymentMethod = ref<'cash' | 'transfer' | 'qr'>('cash')
 const amountReceived = ref<number | null>(null)
 const paymentSlip = ref<string | null>(null)
+const isUploadingSlip = ref(false)
 const notes = ref('')
 const selectedCustomerId = ref<number | null>(null)
 const lastOrder = ref<any>(null)
@@ -100,19 +102,23 @@ const changeDue = computed(() => {
 })
 
 // --- Actions ---
-const handleSlipUpload = (event: any) => {
+const handleSlipUpload = async (event: any) => {
   const file = event.target.files[ 0 ]
   if (file) {
-    // จำกัด 20MB
-    if (file.size > 20000000) {
-      alert('ไฟล์มีขนาดใหญ่เกินไป (จำกัดไม่เกิน 20MB)')
-      return
+    isUploadingSlip.value = true
+    try {
+      const publicUrl = await compressAndUpload(file, 'slips')
+      if (publicUrl) {
+        paymentSlip.value = publicUrl
+      } else {
+        alert('อัปโหลดสลิปไม่สำเร็จ กรุณาตรวจสอบการตั้งค่า Supabase')
+      }
+    } catch (err) {
+      console.error(err)
+      alert('เกิดข้อผิดพลาดในการอัปโหลดสลิป')
+    } finally {
+      isUploadingSlip.value = false
     }
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      paymentSlip.value = e.target?.result as string
-    }
-    reader.readAsDataURL(file)
   }
 }
 
@@ -636,9 +642,16 @@ const formatDate = (dateStr: string) => {
                     <span
                       class="text-[10px] font-black text-slate-400 uppercase tracking-widest">ถ่ายภาพหรืออัปโหลดสลิป</span>
                   </div>
+                  
+                  <!-- Loading Overlay -->
+                  <div v-if="isUploadingSlip" class="absolute inset-0 bg-white/80 flex flex-col items-center justify-center z-10">
+                    <div class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-3"></div>
+                    <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">กำลังอัปโหลดสลิป...</span>
+                  </div>
+
                   <input type="file" accept="image/*" capture="environment" @change="handleSlipUpload"
-                    class="absolute inset-0 opacity-0 cursor-pointer" />
-                  <div v-if="paymentSlip" class="absolute top-4 right-4">
+                    class="absolute inset-0 opacity-0 cursor-pointer" :disabled="isUploadingSlip" />
+                  <div v-if="paymentSlip && !isUploadingSlip" class="absolute top-4 right-4">
                     <button @click="paymentSlip = null"
                       class="bg-rose-500 text-white p-2 rounded-xl shadow-lg hover:bg-rose-600 transition-all font-black text-xs">ถ่ายใหม่</button>
                   </div>

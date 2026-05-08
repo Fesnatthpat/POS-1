@@ -23,7 +23,10 @@ export const compressAndUpload = async (
   const supabaseUrl = config.public.supabaseUrl
   const supabaseKey = config.public.supabaseKey
 
-  console.log(`Starting upload to bucket: ${type}`)
+  // Map types to actual bucket names
+  const bucketName = type === 'slips' ? 'e-Slip' : type;
+  
+  console.log(`Starting upload to bucket: ${bucketName}`)
 
   if (!supabaseUrl || !supabaseKey) {
     console.error('Supabase credentials not configured.')
@@ -100,9 +103,9 @@ export const compressAndUpload = async (
             const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
             const filePath = fileName
 
-            // Upload to Supabase Storage using the 'type' as bucket name
+            // Upload to Supabase Storage using the mapped bucket name
             const { data, error } = await supabase.storage
-              .from(type)
+              .from(bucketName)
               .upload(filePath, blob, {
                 contentType: 'image/jpeg',
                 upsert: true
@@ -116,7 +119,7 @@ export const compressAndUpload = async (
 
             // Get Public URL
             const { data: { publicUrl } } = supabase.storage
-              .from(type)
+              .from(bucketName)
               .getPublicUrl(filePath)
 
             console.log('Upload successful:', publicUrl)
